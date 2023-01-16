@@ -13,7 +13,7 @@ env:
 
 jobs:
   setup:
-    uses: .github/workflows/setup.yaml@main
+    uses: ./.github/workflows/setup.yaml@main
     with:
       default_tag_version: ${DEFAULT_TAG_VERSION}
       build_platforms: ${BUILD_PLATFORMS}

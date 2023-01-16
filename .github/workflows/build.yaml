@@ -24,6 +24,8 @@ jobs:
           echo ${{ needs.setup.outputs.repository_name }}
           echo "image_repository:"
           echo ${{ needs.setup.outputs.image_repository }}
+          echo "image_registry:"
+          echo ${{ needs.setup.outputs.image_registry }}
           echo "image_tag:"
           echo ${{ needs.setup.outputs.image_tag }}
           echo "dist_matrix:"

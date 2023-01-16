@@ -1,7 +1,5 @@
 name: Setup Workflow Variables
 
-
-
 on:
   workflow_call:
     inputs:

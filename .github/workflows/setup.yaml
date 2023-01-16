@@ -17,6 +17,8 @@ on:
         value: ${{ jobs.setup.outputs.repository_name }}
       image_repository:
         value: ${{ jobs.setup.outputs.image_repository }}
+      image_registry:
+        value: ${{ jobs.setup.outputs.image_registry }}
       image_tag:
         value: ${{ jobs.setup.outputs.image_tag }}
       dist_matrix:

@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup
-        uses: ./.github/workflows/setup.yaml
+        uses: ./.github/actions/setup.yaml
         with:
-          default_tag_version: ${{ env. }}
+          default_tag_version: ${{ env.FOO }}
           build_platforms: "linux/amd64,linux/arm64"
           image_registry: "ghcr.io"
 

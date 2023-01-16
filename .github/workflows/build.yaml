@@ -34,8 +34,7 @@ jobs:
           echo ${{ needs.setup.outputs.image_platform_tags }}
 
   anotherone:
-    runs-on: ubuntu-latest
     needs: ["setup"]
-    steps:
-      - name: twoa
-        uses: ${{ needs.setup.outputs.repository_name }}
+    uses: ./.github/workflows/anotherone.yaml
+    with:
+      default_tag_version: ${{ needs.setup.outputs.repository_name }}

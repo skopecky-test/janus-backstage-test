@@ -6,13 +6,19 @@ on:
     tags:
       - v*
 
+env:
+  FOO: "boo"
+
 jobs:
   setup:
-    uses: ./.github/workflows/setup.yaml
-    with:
-      default_tag_version: "latest"
-      build_platforms: "linux/amd64,linux/arm64"
-      image_registry: "ghcr.io"
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup
+        uses: ./.github/workflows/setup.yaml
+        with:
+          default_tag_version: ${{ env. }}
+          build_platforms: "linux/amd64,linux/arm64"
+          image_registry: "ghcr.io"
 
   build:
     runs-on: ubuntu-latest

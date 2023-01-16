@@ -38,6 +38,7 @@ runs:
       shell: bash
       id: set-variables
       run: |
+        echo ${{ inputs.default_tag_version }}
         echo "REPOSITORY_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_OUTPUT
         echo "IMAGE_REPOSITORY=${{ inputs.image_registry }}/$GITHUB_REPOSITORY" >> $GITHUB_OUTPUT
         echo "IMAGE_REGISTRY=${{ inputs.image_registry }}" >> $GITHUB_OUTPUT

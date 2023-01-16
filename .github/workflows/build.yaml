@@ -7,21 +7,29 @@ on:
       - v*
 
 env:
-  FOO: "boo"
+  FOO: "bar"
 
 jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3 
+        uses: actions/checkout@v3
 
       - name: setup
+        id: set-variables
         uses: ./.github/actions/setup
         with:
           default_tag_version: ${{ env.FOO }}
           build_platforms: "linux/amd64,linux/arm64"
           image_registry: "ghcr.io"
+    outputs:
+      repository_name: ${{ steps.set-variables.outputs.REPOSITORY_NAME }}
+      image_repository: ${{ steps.set-variables.outputs.IMAGE_REPOSITORY }}
+      image_registry: ${{ steps.set-variables.outputs.IMAGE_REGISTRY }}
+      image_tag: ${{ steps.set-variables.outputs.IMAGE_TAG}}
+      dist_matrix: ${{ steps.set-variables.outputs.DIST_MATRIX }}
+      image_platform_tags: ${{ steps.set-variables.outputs.IMAGE_PLATFORM_TAGS }}
 
   build:
     runs-on: ubuntu-latest

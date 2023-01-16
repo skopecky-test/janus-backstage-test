@@ -27,11 +27,11 @@ jobs:
         run: |
           echo "repository_name:"
           echo ${{ needs.setup.outputs.repository_name }}
-          echo "\necho "image_repository:""
+          echo "image_repository:"
           echo ${{ needs.setup.outputs.image_repository }}
-          echo "\necho "image_tag:""
+          echo "image_tag:"
           echo ${{ needs.setup.outputs.image_tag }}
-          echo "\necho "dist_matrix:""
+          echo "dist_matrix:"
           echo ${{ needs.setup.outputs.dist_matrix }}
-          echo "\necho "image_platform_tags:""
+          echo "image_platform_tags:"
           echo ${{ needs.setup.outputs.image_platform_tags }}

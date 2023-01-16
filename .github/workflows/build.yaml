@@ -6,16 +6,13 @@ on:
     tags:
       - v*
 
-env:
-  TEST_ENV: "thisisatest"
-
 jobs:
   setup:
     uses: ./.github/workflows/setup.yaml
     with:
-      default_tag_version: $TEST_ENV
+      default_tag_version: "latest"
       build_platforms: "linux/amd64,linux/arm64"
-      image_registry: $TEST_ENV
+      image_registry: "ghcr.io"
 
   build:
     runs-on: ubuntu-latest

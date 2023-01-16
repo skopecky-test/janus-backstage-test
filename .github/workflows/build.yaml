@@ -15,9 +15,9 @@ jobs:
   setup:
     uses: ./.github/workflows/setup.yaml
     with:
-      default_tag_version: ${DEFAULT_TAG_VERSION}
-      build_platforms: ${BUILD_PLATFORMS}
-      image_registry: ${IMAGE_REGISTRY}
+      default_tag_version: "latest"
+      build_platforms: "linux/amd64,linux/arm64"
+      image_registry: "ghcr.io"
 
   build:
     runs-on: ubuntu-latest

@@ -23,7 +23,7 @@ on:
         value: ${{ jobs.setup.outputs.image_tag }}
       dist_matrix:
         value: ${{ jobs.setup.outputs.dist_matrix }}
-        dist_matrix:
+      registry_matrix:
         value: ${{ jobs.setup.outputs.registry_matrix }}
       image_platform_tags:
         value: ${{ jobs.setup.outputs.image_platform_tags }}

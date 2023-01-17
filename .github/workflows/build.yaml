@@ -49,4 +49,4 @@ jobs:
         with:
           registry: ${{ matrix.registry }}
           username: ${{ matrix.username }}
-          password: ${{ secrets[matrix.password_name] }}
+          password: ${{ secrets[matrix.password] }}

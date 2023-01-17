@@ -24,7 +24,7 @@ jobs:
         include:
           - registry: ${{ needs.setup.outputs.image_registry }}
             username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
+            password_name: GITHUB_TOKEN
     steps:
       - name: Setup Job Variables
         id: set-build-variables
@@ -46,5 +46,4 @@ jobs:
         with:
           registry: ${{ matrix.registry }}
           username: ${{ matrix.username }}
-          password: ${{ matrix.password }}
-
+          password: ${{ secrets[matrix.password_name] }}

@@ -29,7 +29,7 @@ jobs:
           # - registry: quay.io
           #   username: QUAY_NAME
           #   password: QUAY_TOKEN
-          
+
     steps:
       - name: Setup Job Variables
         id: set-build-variables
@@ -107,3 +107,4 @@ jobs:
             done
             podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done
+

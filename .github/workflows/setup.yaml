@@ -31,7 +31,7 @@ jobs:
       - name: Setup Workflow Variables
         id: set-variables
         run: |
-          echo "REPOSITORY_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_NAME=$GITHUB_REPOSITORY" >> $GITHUB_OUTPUT
 
           # Set versions based on presence of tag
           if [[ "${{ github.ref }}" =~ ^refs/tags/ ]]; then

@@ -7,6 +7,9 @@ on:
     tags:
       - v*
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   setup:
     uses: ./.github/workflows/setup.yaml
@@ -24,7 +27,7 @@ jobs:
         include:
           - registry: ${{ needs.setup.outputs.image_registry }}
             username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
+            password: ${{ env.GITHUB_TOKEN }}
     steps:
       - name: Setup Job Variables
         id: set-build-variables
@@ -47,4 +50,3 @@ jobs:
           registry: ${{ matrix.registry }}
           username: ${{ matrix.username }}
           password: ${{ matrix.password }}
-

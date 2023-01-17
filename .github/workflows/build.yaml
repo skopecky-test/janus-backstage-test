@@ -49,5 +49,5 @@ jobs:
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a #pin@v2.1.0
         with:
           registry: ${{ matrix.registry }}
-          username: ${{ variables[matrix.username] }}
+          username: ${{ vars[matrix.username] }}
           password: ${{ secrets[matrix.password] }}

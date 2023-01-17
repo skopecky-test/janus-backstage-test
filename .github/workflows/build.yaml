@@ -70,7 +70,7 @@ jobs:
 
       - name: Create Backstage application
         run: |
-          cp ./Dockerfile ./.dockerignore ./backstage/
+          cp ./Dockerfile ./.dockerignore
 
       - name: Build container image and push
         uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 #pin@v3.2.0

@@ -24,7 +24,10 @@ jobs:
         include:
           - registry: ${{ needs.setup.outputs.image_registry }}
             username: ${{ github.actor }}
-            password_name: GITHUB_TOKEN
+            password: GITHUB_TOKEN
+          - registry: quay.io
+            username: skopecky@redhat.com
+            password: QUAY_TOKEN
     steps:
       - name: Setup Job Variables
         id: set-build-variables

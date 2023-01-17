@@ -48,7 +48,6 @@ jobs:
           echo "IMAGE_PLATFORM_TAGS=$(echo ${{ inputs.build_platforms }} | sed  -e 's/,/ /g' -e 's/\//-/g')" >> $GITHUB_OUTPUT
 
     outputs:
-      # Remove repository name, its not used anywhere
       repository_name: ${{ steps.set-variables.outputs.REPOSITORY_NAME }}
       image_tag: ${{ steps.set-variables.outputs.IMAGE_TAG}}
       dist_matrix: ${{ steps.set-variables.outputs.DIST_MATRIX }}

@@ -13,8 +13,9 @@ jobs:
     with:
       default_tag_version: "latest"
       build_platforms: "linux/amd64,linux/arm64"
-      # image_registries: "ghcr.io,quay.io"
       image_registries: "ghcr.io"
+      # Specify more registries
+      # image_registries: "ghcr.io,quay.io"
 
   build:
     runs-on: ubuntu-latest
@@ -27,6 +28,10 @@ jobs:
           - registry: ghcr.io
             username: GHCR_NAME
             password: GITHUB_TOKEN
+          # Specify more registries
+          # - registry: quay.io
+          #   username: QUAY_NAME
+          #   password: QUAY_TOKEN
 
     steps:
       - name: Setup Job Variables
@@ -60,15 +65,15 @@ jobs:
           git config --global user.name "$GITHUB_ACTOR"
           git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      # - name: Create Backstage application
-      #   run: |
-      #     echo backstage | npx @backstage/create-app
-      #     cp ./Dockerfile ./.dockerignore ./backstage/
-
       - name: Create Backstage application
         run: |
-          mkdir backstage
-          cp ./Dockerfile ./.dockerignore
+          echo backstage | npx @backstage/create-app
+          cp ./Dockerfile ./.dockerignore ./backstage/
+
+      # - name: Create Backstage application
+      #   run: |
+      #     mkdir backstage
+      #     cp ./Dockerfile ./.dockerignore
 
       - name: Build container image and push
         uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 #pin@v3.2.0
@@ -92,6 +97,10 @@ jobs:
           - registry: ghcr.io
             username: GHCR_NAME
             password: GITHUB_TOKEN
+          # Specify more registries
+          # - registry: quay.io
+          #   username: QUAY_NAME
+          #   password: QUAY_TOKEN
 
     steps:
       - name: Log in to Registry
@@ -118,4 +127,3 @@ jobs:
             done
             podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done
-

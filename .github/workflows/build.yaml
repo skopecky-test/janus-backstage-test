@@ -27,11 +27,11 @@ jobs:
           - registry: ghcr.io
             username: GHCR_NAME
             password: GITHUB_TOKEN
-            repo_name: skopecky-test
+            repo_name: skopecky-test/janus-backstage-test
           - registry: quay.io
             username: QUAY_NAME
             password: QUAY_TOKEN
-            repo_name: skopecky
+            repo_name: skopecky/janus-backstage-test
 
     steps:
       - name: Setup Job Variables
@@ -110,11 +110,11 @@ jobs:
           - registry: ghcr.io
             username: GHCR_NAME
             password: GITHUB_TOKEN
-            repo_name: skopecky-test
+            repo_name: skopecky-test/janus-backstage-test
           - registry: quay.io
             username: QUAY_NAME
             password: QUAY_TOKEN
-            repo_name: skopecky
+            repo_name: skopecky/janus-backstage-test
 
     steps:
       - name: Log in to Registry

@@ -27,7 +27,7 @@ jobs:
         include:
           - registry: ${{ needs.setup.outputs.image_registry }}
             username: ${{ github.actor }}
-            password: ${{ env.GITHUB_TOKEN }}
+            password: ""
     steps:
       - name: Setup Job Variables
         id: set-build-variables

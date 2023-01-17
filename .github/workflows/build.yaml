@@ -21,6 +21,7 @@ jobs:
     strategy:
       matrix:
         platform: ${{ fromJson(needs.setup.outputs.dist_matrix) }}
+        test: ["foo", "bar"]
         include:
           - registry: ${{ needs.setup.outputs.image_registry }}
             username: ${{ github.actor }}

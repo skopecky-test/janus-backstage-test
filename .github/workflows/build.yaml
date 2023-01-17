@@ -13,7 +13,8 @@ jobs:
     with:
       default_tag_version: "latest"
       build_platforms: "linux/amd64,linux/arm64"
-      image_registries: "ghcr.io,quay.io"
+      # image_registries: "ghcr.io,quay.io"
+      image_registries: "ghcr.io"
 
   build:
     runs-on: ubuntu-latest

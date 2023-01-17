@@ -27,9 +27,9 @@ jobs:
           - registry: ghcr.io
             username: GHCR_NAME
             password: GITHUB_TOKEN
-          # - registry: quay.io
-          #   username: QUAY_NAME
-          #   password: QUAY_TOKEN
+          - registry: quay.io
+            username: QUAY_NAME
+            password: QUAY_TOKEN
 
     steps:
       - name: Setup Job Variables
@@ -96,6 +96,9 @@ jobs:
           - registry: ghcr.io
             username: GHCR_NAME
             password: GITHUB_TOKEN
+          - registry: quay.io
+            username: QUAY_NAME
+            password: QUAY_TOKEN
 
     steps:
       - name: Log in to Registry

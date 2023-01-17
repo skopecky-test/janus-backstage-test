@@ -70,6 +70,7 @@ jobs:
 
       - name: Create Backstage application
         run: |
+          mkdir backstage
           cp ./Dockerfile ./.dockerignore
 
       - name: Build container image and push

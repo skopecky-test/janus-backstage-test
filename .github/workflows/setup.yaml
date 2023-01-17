@@ -9,16 +9,12 @@ on:
       build_platforms:
         required: true
         type: string
-      image_registry:
+      image_registries:
         required: true
         type: string
     outputs:
       repository_name:
         value: ${{ jobs.setup.outputs.repository_name }}
-      image_repository:
-        value: ${{ jobs.setup.outputs.image_repository }}
-      image_registry:
-        value: ${{ jobs.setup.outputs.image_registry }}
       image_tag:
         value: ${{ jobs.setup.outputs.image_tag }}
       dist_matrix:
@@ -36,8 +32,6 @@ jobs:
         id: set-variables
         run: |
           echo "REPOSITORY_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_OUTPUT
-          echo "IMAGE_REPOSITORY=${{ inputs.image_registry }}/$GITHUB_REPOSITORY" >> $GITHUB_OUTPUT
-          echo "IMAGE_REGISTRY=${{ inputs.image_registry }}" >> $GITHUB_OUTPUT
 
           # Set versions based on presence of tag
           if [[ "${{ github.ref }}" =~ ^refs/tags/ ]]; then
@@ -45,18 +39,16 @@ jobs:
           else
             echo "IMAGE_TAG=${{ inputs.default_tag_version }}" >> $GITHUB_OUTPUT
           fi
-
+          
           # Create Distribution Matrix
           echo "DIST_MATRIX=$(echo -n "${{ inputs.build_platforms }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
           # Create Registry Matrix
-          echo "REGISTRY_MATRIX=$(echo -n "${{ inputs.image_registry }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
+          echo "REGISTRY_MATRIX=$(echo -n "${{ inputs.image_registries }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
           # Create Image Tags
           echo "IMAGE_PLATFORM_TAGS=$(echo ${{ inputs.build_platforms }} | sed  -e 's/,/ /g' -e 's/\//-/g')" >> $GITHUB_OUTPUT
 
     outputs:
       repository_name: ${{ steps.set-variables.outputs.REPOSITORY_NAME }}
-      image_repository: ${{ steps.set-variables.outputs.IMAGE_REPOSITORY }}
-      image_registry: ${{ steps.set-variables.outputs.IMAGE_REGISTRY }}
       image_tag: ${{ steps.set-variables.outputs.IMAGE_TAG}}
       dist_matrix: ${{ steps.set-variables.outputs.DIST_MATRIX }}
       registry_matrix: ${{ steps.set-variables.outputs.REGISTRY_MATRIX }}

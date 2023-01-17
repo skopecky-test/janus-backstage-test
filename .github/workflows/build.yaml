@@ -63,9 +63,13 @@ jobs:
           git config --global user.name "$GITHUB_ACTOR"
           git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
+      # - name: Create Backstage application
+      #   run: |
+      #     echo backstage | npx @backstage/create-app
+      #     cp ./Dockerfile ./.dockerignore ./backstage/
+
       - name: Create Backstage application
         run: |
-          echo backstage | npx @backstage/create-app
           cp ./Dockerfile ./.dockerignore ./backstage/
 
       - name: Build container image and push

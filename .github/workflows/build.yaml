@@ -27,9 +27,11 @@ jobs:
           - registry: ghcr.io
             username: GHCR_NAME
             password: GITHUB_TOKEN
+            repo_name: skopecky-test
           - registry: quay.io
             username: QUAY_NAME
             password: QUAY_TOKEN
+            repo_name: skopecky
 
     steps:
       - name: Setup Job Variables
@@ -73,6 +75,17 @@ jobs:
           mkdir backstage
           cp ./Dockerfile ./.dockerignore
 
+      # - name: Build container image and push
+      #   uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 #pin@v3.2.0
+      #   with:
+      #     context: backstage
+      #     file: Dockerfile
+      #     platforms: ${{ matrix.platform }}
+      #     push: true
+      #     tags: |
+      #       ${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+      #       ${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+
       - name: Build container image and push
         uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 #pin@v3.2.0
         with:
@@ -81,8 +94,9 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            ${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-            ${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+            ${{ matrix.registry }}/${{ matrix.repo_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+            ${{ matrix.registry }}/${{ matrix.repo_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+
 
   process-image-manifest:
     runs-on: ubuntu-latest
@@ -96,9 +110,11 @@ jobs:
           - registry: ghcr.io
             username: GHCR_NAME
             password: GITHUB_TOKEN
+            repo_name: skopecky-test
           - registry: quay.io
             username: QUAY_NAME
             password: QUAY_TOKEN
+            repo_name: skopecky
 
     steps:
       - name: Log in to Registry
@@ -112,7 +128,7 @@ jobs:
         shell: bash
         run: |
           TAGS="latest"
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repo_name }}"
 
           if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
             TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"

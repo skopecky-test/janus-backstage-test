@@ -12,9 +12,7 @@ for i in "${SET[@]}"; do
 	JSON="$JSON$JSON_LINE"
 done
 
-if [[ $JSON == *, ]]; then
-	JSON="${JSON%?}"
-fi
+JSON="${JSON%?}"
 JSON="$JSON],"
 
 

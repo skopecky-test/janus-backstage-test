@@ -43,12 +43,9 @@ jobs:
             JSON_LINE="\"${LINE[0]}\","
             JSON="$JSON$JSON_LINE"
           done
-
-          if [[ $JSON == *, ]]; then
-            JSON="${JSON%?}"
-          fi
+          
+          JSON="${JSON%?}"
           JSON="$JSON],"
-
 
           JSON="$JSON\"include\":["
           IFS=',' read -ra SET <<< "${{ inputs.image_registries }}"

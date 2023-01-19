@@ -21,17 +21,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["setup"]
     strategy:
-      matrix: ${{ fromJson(needs.setup.outputs.my_matrix) }}
+      matrix:
+        ${{ fromJson(needs.setup.outputs.my_matrix) }}
         # platform: ${{ fromJson(needs.setup.outputs.dist_matrix) }}
         # registry: ${{ fromJson(needs.setup.outputs.registry_matrix) }}
         # include:
         #   - registry: ghcr.io
         #     username: GHCR_NAME
         #     password: GITHUB_TOKEN
-          # Specify more registries
-          # - registry: quay.io
-          #   username: QUAY_NAME
-          #   password: QUAY_TOKEN
+        # Specify more registries
+        # - registry: quay.io
+        #   username: QUAY_NAME
+        #   password: QUAY_TOKEN
 
     steps:
       - name: Setup Job Variables
@@ -92,16 +93,16 @@ jobs:
     needs: ["setup", "build"]
     strategy:
       matrix:
-        matrix: ${{ fromJson(needs.setup.outputs.second_matrix) }}
+        ${{ fromJson(needs.setup.outputs.second_matrix) }}
         # registry: ${{ fromJson(needs.setup.outputs.registry_matrix) }}
         # include:
         #   - registry: ghcr.io
         #     username: GHCR_NAME
         #     password: GITHUB_TOKEN
-          # Specify more registries
-          # - registry: quay.io
-          #   username: QUAY_NAME
-          #   password: QUAY_TOKEN
+        # Specify more registries
+        # - registry: quay.io
+        #   username: QUAY_NAME
+        #   password: QUAY_TOKEN
 
     steps:
       - name: Log in to Registry

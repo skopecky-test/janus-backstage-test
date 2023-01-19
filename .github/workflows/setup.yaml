@@ -17,10 +17,10 @@ on:
         value: ${{ jobs.setup.outputs.repository_name }}
       image_tag:
         value: ${{ jobs.setup.outputs.image_tag }}
-      my_matrix:
-        value: ${{ jobs.setup.outputs.my_matrix }}
-      second_matrix:
-        value: ${{ jobs.setup.outputs.second_matrix }}
+      build_matrix:
+        value: ${{ jobs.setup.outputs.build_matrix }}
+      image_manifest_matrix:
+        value: ${{ jobs.setup.outputs.image_manifest_matrix }}
       image_platform_tags:
         value: ${{ jobs.setup.outputs.image_platform_tags }}
 
@@ -52,14 +52,11 @@ jobs:
           JSON="${JSON%?}]}"
 
           # Fork json for process-image-manifest job
-          JSON_FORK="{$JSON"
-          echo $JSON_FORK
-          echo "SECOND_MATRIX=$JSON_FORK" >> $GITHUB_OUTPUT
+          echo "IMAGE_MANIFEST_MATRIX={$JSON" >> $GITHUB_OUTPUT
 
           # Add platform array at the start
           JSON="{\"platform\":$(echo -n "${{ inputs.build_platforms }}" | jq -csR '. | split(",")'),$JSON"
-          echo $JSON
-          echo "MY_MATRIX=$JSON" >> $GITHUB_OUTPUT
+          echo "BUILD_MATRIX=$JSON" >> $GITHUB_OUTPUT
 
           # TODO: Make this better
           echo "REPOSITORY_NAME=$GITHUB_REPOSITORY" >> $GITHUB_OUTPUT
@@ -77,5 +74,5 @@ jobs:
       repository_name: ${{ steps.set-variables.outputs.REPOSITORY_NAME }}
       image_tag: ${{ steps.set-variables.outputs.IMAGE_TAG}}
       image_platform_tags: ${{ steps.set-variables.outputs.IMAGE_PLATFORM_TAGS }}
-      my_matrix: ${{ steps.set-variables.outputs.MY_MATRIX }}
-      second_matrix: ${{ steps.set-variables.outputs.SECOND_MATRIX }}
+      build_matrix: ${{ steps.set-variables.outputs.BUILD_MATRIX }}
+      image_manifest_matrix: ${{ steps.set-variables.outputs.IMAGE_MANIFEST_MATRIX }}

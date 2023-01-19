@@ -33,12 +33,12 @@ jobs:
       - name: Setup Workflow Variables
         id: set-variables
         run: |
-          FIRST="${{ inputs.image_registries }}"
-          SEC="${{ inputs.build_platforms }}"
+          # FIRST="${{ inputs.image_registries }}"
+          # SEC="${{ inputs.build_platforms }}"
 
-          JSON="{\"platform\":"
+          # JSON="{\"platform\":"
 
-          JSON="$JSON$(echo -n "$SEC" | jq -csR '. | split(",")'),"
+          # JSON="$JSON$(echo -n "$SEC" | jq -csR '. | split(",")'),"
 
           # JSON="$JSON\"include\":["
           # IFS=',' read -ra SET <<< "$FIRST"

@@ -44,6 +44,21 @@ jobs:
 
           JSON="$JSON$(echo -n "$SEC" | jq -csR '. | split(",")'),"
 
+          JSON="$JSON\"registry\":["
+          IFS=',' read -ra SET <<< "$FIRST"
+
+          for i in "${SET[@]}"; do
+            IFS=';' read -ra LINE <<< "$i"
+            JSON_LINE="\"${LINE[0]}\","
+            JSON="$JSON$JSON_LINE"
+          done
+
+          if [[ $JSON == *, ]]; then
+            JSON="${JSON%?}"
+          fi
+          JSON="$JSON],"
+
+
           JSON="$JSON\"include\":["
           IFS=',' read -ra SET <<< "$FIRST"
 
@@ -56,7 +71,7 @@ jobs:
           if [[ $JSON == *, ]]; then
             JSON="${JSON%?}"
           fi
-          
+
           JSON="$JSON]}"
 
           echo $JSON

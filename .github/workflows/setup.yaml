@@ -61,7 +61,7 @@ jobs:
           echo "SECOND_MATRIX=$JSON_FORK" >> $GITHUB_OUTPUT
 
           # Add platform array at the start
-          JSON="{\"platform\":$(echo -n "$SEC" | jq -csR '. | split(",")'),$JSON"
+          JSON="{\"platform\":$(echo -n "${{ inputs.build_platforms }}" | jq -csR '. | split(",")'),$JSON"
           echo $JSON
           echo "MY_MATRIX=$JSON" >> $GITHUB_OUTPUT
 

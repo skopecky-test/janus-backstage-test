@@ -3,11 +3,7 @@
 FIRST="ghcr.io;GHCR_NAME;GITHUB_TOKEN,quay.io;QUAY_NAME;QUAY_PASSWORD"
 SEC="linux/amd64,linux/arm64"
 
-JSON="{\"platform\":"
-
-JSON="$JSON$(echo -n "$SEC" | jq -csR '. | split(",")'),"
-
-JSON="$JSON\"registry\":["
+JSON="\"registry\":["
 IFS=',' read -ra SET <<< "$FIRST"
 
 for i in "${SET[@]}"; do
@@ -31,9 +27,17 @@ for i in "${SET[@]}"; do
 	JSON="$JSON$JSON_LINE"
 done
 
+
+
 if [[ $JSON == *, ]]; then
 	JSON="${JSON%?}"
 fi
 
 JSON="$JSON]}"
+TWO_JSON="{$JSON"
+echo $TWO_JSON
+
+JSON="$(echo -n "$SEC" | jq -csR '. | split(",")'),$JSON"
+JSON="{\"platform\":$JSON"
+
 echo $JSON

@@ -23,6 +23,8 @@ on:
       #   value: ${{ jobs.setup.outputs.registry_matrix }}
       my_matrix:
         value: ${{ jobs.setup.outputs.my_matrix }}
+      second_matrix:
+        value: ${{ jobs.setup.outputs.second_matrix }}
       image_platform_tags:
         value: ${{ jobs.setup.outputs.image_platform_tags }}
 
@@ -33,19 +35,8 @@ jobs:
       - name: Setup Workflow Variables
         id: set-variables
         run: |
-          # matrix_from_csv () {
-          #   echo "$1=$(echo -n "$2" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
-          # }
-
-          FIRST="${{ inputs.image_registries }}"
-          SEC="${{ inputs.build_platforms }}"
-
-          JSON="{\"platform\":"
-
-          JSON="$JSON$(echo -n "$SEC" | jq -csR '. | split(",")'),"
-
-          JSON="$JSON\"registry\":["
-          IFS=',' read -ra SET <<< "$FIRST"
+          JSON="\"registry\":["
+          IFS=',' read -ra SET <<< "${{ inputs.image_registries }}"
 
           for i in "${SET[@]}"; do
             IFS=';' read -ra LINE <<< "$i"
@@ -60,7 +51,7 @@ jobs:
 
 
           JSON="$JSON\"include\":["
-          IFS=',' read -ra SET <<< "$FIRST"
+          IFS=',' read -ra SET <<< "${{ inputs.image_registries }}"
 
           for i in "${SET[@]}"; do
             IFS=';' read -ra LINE <<< "$i"
@@ -73,9 +64,17 @@ jobs:
           fi
 
           JSON="$JSON]}"
+          TWO_JSON="{$JSON"
+          echo $TWO_JSON
+          echo "SECOND_MATRIX=$TWO_JSON" >> $GITHUB_OUTPUT
+
+          JSON="$(echo -n "${{ inputs.build_platforms }}" | jq -csR '. | split(",")'),$JSON"
+          JSON="{\"platform\":$JSON"
 
           echo $JSON
+
           echo "MY_MATRIX=$JSON" >> $GITHUB_OUTPUT
+
           # TODO: Make this better
           echo "REPOSITORY_NAME=$GITHUB_REPOSITORY" >> $GITHUB_OUTPUT
 
@@ -86,11 +85,6 @@ jobs:
             echo "IMAGE_TAG=${{ inputs.default_tag_version }}" >> $GITHUB_OUTPUT
           fi
 
-          # Create Distribution Matrix
-          # matrix_from_csv "DIST_MATRIX" ${{ inputs.build_platforms }}
-          # Create Registry Matrix
-          # matrix_from_csv "REGISTRY_MATRIX" ${{ inputs.image_registries }}
-          # # Create Image Tags
           echo "IMAGE_PLATFORM_TAGS=$(echo ${{ inputs.build_platforms }} | sed  -e 's/,/ /g' -e 's/\//-/g')" >> $GITHUB_OUTPUT
 
     outputs:
@@ -100,3 +94,4 @@ jobs:
       # registry_matrix: ${{ steps.set-variables.outputs.REGISTRY_MATRIX }}
       image_platform_tags: ${{ steps.set-variables.outputs.IMAGE_PLATFORM_TAGS }}
       my_matrix: ${{ steps.set-variables.outputs.MY_MATRIX }}
+      second_matrix: ${{ steps.set-variables.outputs.SECOND_MATRIX }}

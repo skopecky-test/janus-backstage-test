@@ -21,8 +21,8 @@ on:
       #   value: ${{ jobs.setup.outputs.dist_matrix }}
       # registry_matrix:
       #   value: ${{ jobs.setup.outputs.registry_matrix }}
-      # my_matrix:
-      #   value: ${{ jobs.setup.outputs.my_matrix }}
+      my_matrix:
+        value: ${{ jobs.setup.outputs.my_matrix }}
       image_platform_tags:
         value: ${{ jobs.setup.outputs.image_platform_tags }}
 
@@ -37,6 +37,7 @@ jobs:
           #   echo "$1=$(echo -n "$2" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
           # }
 
+          echo "MY_MATRIX=test" >> $GITHUB_OUTPUT
           # TODO: Make this better
           echo "REPOSITORY_NAME=$GITHUB_REPOSITORY" >> $GITHUB_OUTPUT
 
@@ -60,4 +61,4 @@ jobs:
       # dist_matrix: ${{ steps.set-variables.outputs.DIST_MATRIX }}
       # registry_matrix: ${{ steps.set-variables.outputs.REGISTRY_MATRIX }}
       image_platform_tags: ${{ steps.set-variables.outputs.IMAGE_PLATFORM_TAGS }}
-      # my_matrix: ${{ steps.set-variables.outputs.MY_MATRIX }}
+      my_matrix: ${{ steps.set-variables.outputs.MY_MATRIX }}

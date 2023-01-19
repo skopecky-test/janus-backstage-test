@@ -12,11 +12,8 @@ for i in "${SET[@]}"; do
 	JSON="$JSON$JSON_LINE"
 done
 
-JSON="${JSON%?}"
-JSON="$JSON],"
+JSON="${JSON%?}],\"include\":["
 
-
-JSON="$JSON\"include\":["
 IFS=',' read -ra SET <<< "$FIRST"
 
 for i in "${SET[@]}"; do
@@ -25,17 +22,11 @@ for i in "${SET[@]}"; do
 	JSON="$JSON$JSON_LINE"
 done
 
+JSON="${JSON%?}]}"
 
-
-if [[ $JSON == *, ]]; then
-	JSON="${JSON%?}"
-fi
-
-JSON="$JSON]}"
 TWO_JSON="{$JSON"
 echo $TWO_JSON
 
-JSON="$(echo -n "$SEC" | jq -csR '. | split(",")'),$JSON"
-JSON="{\"platform\":$JSON"
+JSON="{\"platform\":$(echo -n "$SEC" | jq -csR '. | split(",")'),$JSON"
 
 echo $JSON

@@ -17,10 +17,6 @@ on:
         value: ${{ jobs.setup.outputs.repository_name }}
       image_tag:
         value: ${{ jobs.setup.outputs.image_tag }}
-      # dist_matrix:
-      #   value: ${{ jobs.setup.outputs.dist_matrix }}
-      # registry_matrix:
-      #   value: ${{ jobs.setup.outputs.registry_matrix }}
       my_matrix:
         value: ${{ jobs.setup.outputs.my_matrix }}
       second_matrix:
@@ -80,8 +76,6 @@ jobs:
     outputs:
       repository_name: ${{ steps.set-variables.outputs.REPOSITORY_NAME }}
       image_tag: ${{ steps.set-variables.outputs.IMAGE_TAG}}
-      # dist_matrix: ${{ steps.set-variables.outputs.DIST_MATRIX }}
-      # registry_matrix: ${{ steps.set-variables.outputs.REGISTRY_MATRIX }}
       image_platform_tags: ${{ steps.set-variables.outputs.IMAGE_PLATFORM_TAGS }}
       my_matrix: ${{ steps.set-variables.outputs.MY_MATRIX }}
       second_matrix: ${{ steps.set-variables.outputs.SECOND_MATRIX }}

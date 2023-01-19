@@ -57,8 +57,9 @@ jobs:
           if [[ $JSON == *, ]]; then
             JSON="${JSON%?}"
           fi
-          JSON="$JSON]}"
-          
+          # JSON="$JSON]}"
+          # JSON="$JSON}"
+
           echo $JSON
           echo "MY_MATRIX=$JSON" >> $GITHUB_OUTPUT
           # TODO: Make this better

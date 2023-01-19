@@ -54,7 +54,7 @@ jobs:
           # fi
 
           # JSON="$JSON]}"
-          echo "$MY_MATRIX=$JSON" >> $GITHUB_OUTPUT 
+          # echo "$MY_MATRIX=$JSON" >> $GITHUB_OUTPUT 
 
           # matrix_from_csv () {
           #   echo "$1=$(echo -n "$2" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT

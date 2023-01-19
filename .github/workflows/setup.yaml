@@ -31,6 +31,11 @@ jobs:
       - name: Setup Workflow Variables
         id: set-variables
         run: |
+          matrix_from_csv () {
+            echo "$1=$(echo -n "$2" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
+          }
+          
+          # TODO: Make this better
           echo "REPOSITORY_NAME=$GITHUB_REPOSITORY" >> $GITHUB_OUTPUT
 
           # Set versions based on presence of tag
@@ -40,11 +45,14 @@ jobs:
             echo "IMAGE_TAG=${{ inputs.default_tag_version }}" >> $GITHUB_OUTPUT
           fi
           
+          # TODO: make it a function
           # Create Distribution Matrix
-          echo "DIST_MATRIX=$(echo -n "${{ inputs.build_platforms }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
-          # Create Registry Matrix
-          echo "REGISTRY_MATRIX=$(echo -n "${{ inputs.image_registries }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
-          # Create Image Tags
+          # echo "DIST_MATRIX=$(echo -n "${{ inputs.build_platforms }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
+          # # Create Registry Matrix
+          # echo "REGISTRY_MATRIX=$(echo -n "${{ inputs.image_registries }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
+          # # Create Image Tags
+          matrix_from_csv "DIST_MATRIX" ${{ inputs.build_platforms }}
+          matrix_from_csv "REGISTRY_MATRIX" ${{ inputs.image_registries }}
           echo "IMAGE_PLATFORM_TAGS=$(echo ${{ inputs.build_platforms }} | sed  -e 's/,/ /g' -e 's/\//-/g')" >> $GITHUB_OUTPUT
 
     outputs:

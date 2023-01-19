@@ -5,7 +5,7 @@ SEC="linux/amd64,linux/arm64"
 
 JSON="{\"platform\":"
 
-JSON="$JSON"$(echo -n "$SEC" | jq -csR '. | split(",")')","
+JSON="$JSON$(echo -n "$SEC" | jq -csR '. | split(",")'),"
 
 JSON="$JSON\"include\":["
 IFS=',' read -ra SET <<< "$FIRST"

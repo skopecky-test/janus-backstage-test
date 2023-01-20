@@ -15,7 +15,7 @@ jobs:
       build_platforms: "linux/amd64,linux/arm64"
       image_registries: "ghcr.io,quay.io"
       usernames: "GHCR_NAME,QUAY_NAME"
-      passwords: "GITHUB_TOKEN,QUAY_PASSWORD"
+      passwords: "GITHUB_TOKEN,QUAY_TOKEN"
 
   build:
     runs-on: ubuntu-latest

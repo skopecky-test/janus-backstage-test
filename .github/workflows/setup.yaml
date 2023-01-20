@@ -62,7 +62,7 @@ jobs:
           echo "IMAGE_MANIFEST_MATRIX={$JSON" >> $GITHUB_OUTPUT
 
           # Add platform array at the start
-          JSON="{\"platform\":$(csv_to_json $SEC),$JSON"
+          JSON="{\"platform\":$(csv_to_json "${{ inputs.build_platforms }}"),$JSON"
           echo "BUILD_MATRIX=$JSON" >> $GITHUB_OUTPUT
           echo $JSON
           # TODO: Make this better

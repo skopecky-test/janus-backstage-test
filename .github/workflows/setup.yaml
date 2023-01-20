@@ -12,6 +12,12 @@ on:
       image_registries:
         required: true
         type: string
+      usernames:
+        required: true
+        type: string
+      passwords:
+        required: true
+        type: string
     outputs:
       repository_name:
         value: ${{ jobs.setup.outputs.repository_name }}
@@ -31,31 +37,32 @@ jobs:
       - name: Setup Workflow Variables
         id: set-variables
         run: |
+          csv_to_json () {
+            echo $(echo -n "$1" | jq -csR '. | split(",")')
+          }
+
           # Create image registries array
-          JSON="\"registry\":["
-          IFS=',' read -ra SET <<< "${{ inputs.image_registries }}"
-          for i in "${SET[@]}"; do
-            IFS=';' read -ra LINE <<< "$i"
-            JSON_LINE="\"${LINE[0]}\","
-            JSON="$JSON$JSON_LINE"
-          done
-          JSON="${JSON%?}],"
+          JSON="\"registry\":$(csv_to_json "${{ inputs.image_registries }}"),"
 
           # Add username/password to user registries
-          JSON="$JSON\"include\":["
-          IFS=',' read -ra SET <<< "${{ inputs.image_registries }}"
-          for i in "${SET[@]}"; do
-            IFS=';' read -ra LINE <<< "$i"
-            JSON_LINE="{\"registry\": \"${LINE[0]}\", \"username\": \"${LINE[1]}\", \"password\": \"${LINE[2]}\"},"	
+          JSON="${JSON%?},\"include\":["
+
+          IFS=',' read -ra USERNAMES <<< "${{ inputs.usernames }}"
+          IFS=',' read -ra PASSWORDS <<< "${{ inputs.passwords }}"
+          IFS=',' read -ra REGISTRIES <<< "${{ inputs.registries }}"
+
+          for i in "${!USERNAMES[@]}"; do 
+            JSON_LINE="{\"registry\": \"${REGISTRIES[$i]}\", \"username\": \"${USERNAMES[$i]}\", \"password\": \"${PASSWORDS[$i]}\"},"	
             JSON="$JSON$JSON_LINE"
           done
+
           JSON="${JSON%?}]}"
 
           # Fork json for process-image-manifest job
           echo "IMAGE_MANIFEST_MATRIX={$JSON" >> $GITHUB_OUTPUT
 
           # Add platform array at the start
-          JSON="{\"platform\":$(echo -n "${{ inputs.build_platforms }}" | jq -csR '. | split(",")'),$JSON"
+          JSON="{\"platform\":$(csv_to_json $SEC),$JSON"
           echo "BUILD_MATRIX=$JSON" >> $GITHUB_OUTPUT
 
           # TODO: Make this better

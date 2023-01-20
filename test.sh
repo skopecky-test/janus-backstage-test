@@ -1,24 +1,23 @@
 #!/bin/bash
 
-FIRST="ghcr.io;GHCR_NAME;GITHUB_TOKEN,quay.io;QUAY_NAME;QUAY_PASSWORD"
+csv_to_json () {
+	echo $(echo -n "$1" | jq -csR '. | split(",")')
+}
+
+FIRST="ghcr.io,quay.io"
 SEC="linux/amd64,linux/arm64"
+USERNAME="GHCR_NAME,QUAY_NAME"
+PASSWORD="GITHUB_TOKEN,QUAY_PASSWORD"
 
-JSON="\"registry\":["
-IFS=',' read -ra SET <<< "$FIRST"
+JSON="\"registry\":$(csv_to_json $FIRST),"
+JSON="${JSON%?},\"include\":["
 
-for i in "${SET[@]}"; do
-	IFS=';' read -ra LINE <<< "$i"
-	JSON_LINE="\"${LINE[0]}\","
-	JSON="$JSON$JSON_LINE"
-done
+IFS=',' read -ra USERNAMES <<< "$USERNAME"
+IFS=',' read -ra PASSWORDS <<< "$PASSWORD"
+IFS=',' read -ra REGISTRIES <<< "$FIRST"
 
-JSON="${JSON%?}],\"include\":["
-
-IFS=',' read -ra SET <<< "$FIRST"
-
-for i in "${SET[@]}"; do
-	IFS=';' read -ra LINE <<< "$i"
-	JSON_LINE="{\"registry\": \"${LINE[0]}\", \"username\": \"${LINE[1]}\", \"password\": \"${LINE[2]}\"},"	
+for i in "${!USERNAMES[@]}"; do 
+	JSON_LINE="{\"registry\": \"${REGISTRIES[$i]}\", \"username\": \"${USERNAMES[$i]}\", \"password\": \"${PASSWORDS[$i]}\"},"	
 	JSON="$JSON$JSON_LINE"
 done
 
@@ -27,6 +26,6 @@ JSON="${JSON%?}]}"
 TWO_JSON="{$JSON"
 echo $TWO_JSON
 
-JSON="{\"platform\":$(echo -n "$SEC" | jq -csR '. | split(",")'),$JSON"
+JSON="{\"platform\":$(csv_to_json $SEC),$JSON"
 
 echo $JSON

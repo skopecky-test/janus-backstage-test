@@ -13,8 +13,9 @@ jobs:
     with:
       default_tag_version: "latest"
       build_platforms: "linux/amd64,linux/arm64"
-      image_registries: "ghcr.io;GHCR_NAME;GITHUB_TOKEN"
-      # image_registries: "ghcr.io;GHCR_NAME;GITHUB_TOKEN,quay.io;QUAY_NAME;QUAY_PASSWORD"
+      image_registries: "ghcr.io"
+      usernames: "GHCR_NAME"
+      passwords: "GITHUB_TOKEN"
 
   build:
     runs-on: ubuntu-latest

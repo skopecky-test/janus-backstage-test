@@ -49,7 +49,7 @@ jobs:
 
           IFS=',' read -ra USERNAMES <<< "${{ inputs.usernames }}"
           IFS=',' read -ra PASSWORDS <<< "${{ inputs.passwords }}"
-          IFS=',' read -ra REGISTRIES <<< "${{ inputs.registries }}"
+          IFS=',' read -ra REGISTRIES <<< "${{ inputs.image_registries }}"
 
           for i in "${!USERNAMES[@]}"; do 
             JSON_LINE="{\"registry\": \"${REGISTRIES[$i]}\", \"username\": \"${USERNAMES[$i]}\", \"password\": \"${PASSWORDS[$i]}\"},"	

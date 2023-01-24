@@ -72,13 +72,13 @@ jobs:
         uses: ishworkh/docker-image-artifact-upload@v1
         with:
           image: ${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-          retenton_days: "1"
+          retention_days: "1"
 
       - name: Upload image
         uses: ishworkh/docker-image-artifact-upload@v1
         with:
           image: ${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-          retenton_days: "1"
+          retention_days: "1"
 
           
 

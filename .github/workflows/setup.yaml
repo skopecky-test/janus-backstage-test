@@ -16,6 +16,8 @@ on:
         value: ${{ jobs.setup.outputs.image_tag }}
       dist_matrix:
         value: ${{ jobs.setup.outputs.dist_matrix }}
+      registry_matrix:
+        value: ${{ jobs.setup.outputs.registry_matrix }}
       image_platform_tags:
         value: ${{ jobs.setup.outputs.image_platform_tags }}
 
@@ -37,6 +39,8 @@ jobs:
           
           # Create Distribution Matrix
           echo "DIST_MATRIX=$(echo -n "${{ inputs.build_platforms }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
+          # Create Registry Matrix
+          echo "REGISTRY_MATRIX=$(echo -n "${{ inputs.image_registries }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
           # Create Image Tags
           echo "IMAGE_PLATFORM_TAGS=$(echo ${{ inputs.build_platforms }} | sed  -e 's/,/ /g' -e 's/\//-/g')" >> $GITHUB_OUTPUT
           echo $GITHUB_OUTPUT
@@ -46,4 +50,5 @@ jobs:
       repository_name: ${{ steps.set-variables.outputs.REPOSITORY_NAME }}
       image_tag: ${{ steps.set-variables.outputs.IMAGE_TAG}}
       dist_matrix: ${{ steps.set-variables.outputs.DIST_MATRIX }}
+      registry_matrix: ${{ steps.set-variables.outputs.REGISTRY_MATRIX }}
       image_platform_tags: ${{ steps.set-variables.outputs.IMAGE_PLATFORM_TAGS }}

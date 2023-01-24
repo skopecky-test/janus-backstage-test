@@ -9,6 +9,9 @@ on:
       build_platforms:
         required: true
         type: string
+      image_registries:
+        required: true
+        type: string
     outputs:
       repository_name:
         value: ${{ jobs.setup.outputs.repository_name }}

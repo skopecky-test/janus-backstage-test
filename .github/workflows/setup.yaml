@@ -12,21 +12,15 @@ on:
       image_registries:
         required: true
         type: string
-      usernames:
-        required: true
-        type: string
-      passwords:
-        required: true
-        type: string
     outputs:
       repository_name:
         value: ${{ jobs.setup.outputs.repository_name }}
       image_tag:
         value: ${{ jobs.setup.outputs.image_tag }}
-      build_matrix:
-        value: ${{ jobs.setup.outputs.build_matrix }}
-      image_manifest_matrix:
-        value: ${{ jobs.setup.outputs.image_manifest_matrix }}
+      dist_matrix:
+        value: ${{ jobs.setup.outputs.dist_matrix }}
+      registry_matrix:
+        value: ${{ jobs.setup.outputs.registry_matrix }}
       image_platform_tags:
         value: ${{ jobs.setup.outputs.image_platform_tags }}
 
@@ -37,35 +31,6 @@ jobs:
       - name: Setup Workflow Variables
         id: set-variables
         run: |
-          csv_to_json () {
-            echo $(echo -n "$1" | jq -csR '. | split(",")')
-          }
-
-          # Create image registries array
-          JSON="\"registry\":$(csv_to_json "${{ inputs.image_registries }}"),"
-
-          # Add username/password to user registries
-          JSON="${JSON%?},\"include\":["
-
-          IFS=',' read -ra USERNAMES <<< "${{ inputs.usernames }}"
-          IFS=',' read -ra PASSWORDS <<< "${{ inputs.passwords }}"
-          IFS=',' read -ra REGISTRIES <<< "${{ inputs.image_registries }}"
-
-          for i in "${!USERNAMES[@]}"; do 
-            JSON_LINE="{\"registry\": \"${REGISTRIES[$i]}\", \"username\": \"${USERNAMES[$i]}\", \"password\": \"${PASSWORDS[$i]}\"},"	
-            JSON="$JSON$JSON_LINE"
-          done
-
-          JSON="${JSON%?}]}"
-          echo $JSON
-          # Fork json for process-image-manifest job
-          echo "IMAGE_MANIFEST_MATRIX={$JSON" >> $GITHUB_OUTPUT
-
-          # Add platform array at the start
-          JSON="{\"platform\":$(csv_to_json "${{ inputs.build_platforms }}"),$JSON"
-          echo "BUILD_MATRIX=$JSON" >> $GITHUB_OUTPUT
-          echo $JSON
-          # TODO: Make this better
           echo "REPOSITORY_NAME=$GITHUB_REPOSITORY" >> $GITHUB_OUTPUT
 
           # Set versions based on presence of tag
@@ -74,12 +39,19 @@ jobs:
           else
             echo "IMAGE_TAG=${{ inputs.default_tag_version }}" >> $GITHUB_OUTPUT
           fi
-
+          
+          # Create Distribution Matrix
+          echo "DIST_MATRIX=$(echo -n "${{ inputs.build_platforms }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
+          # Create Registry Matrix
+          echo "REGISTRY_MATRIX=$(echo -n "${{ inputs.image_registries }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
+          # Create Image Tags
           echo "IMAGE_PLATFORM_TAGS=$(echo ${{ inputs.build_platforms }} | sed  -e 's/,/ /g' -e 's/\//-/g')" >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
+
 
     outputs:
       repository_name: ${{ steps.set-variables.outputs.REPOSITORY_NAME }}
       image_tag: ${{ steps.set-variables.outputs.IMAGE_TAG}}
+      dist_matrix: ${{ steps.set-variables.outputs.DIST_MATRIX }}
+      registry_matrix: ${{ steps.set-variables.outputs.REGISTRY_MATRIX }}
       image_platform_tags: ${{ steps.set-variables.outputs.IMAGE_PLATFORM_TAGS }}
-      build_matrix: ${{ steps.set-variables.outputs.BUILD_MATRIX }}
-      image_manifest_matrix: ${{ steps.set-variables.outputs.IMAGE_MANIFEST_MATRIX }}

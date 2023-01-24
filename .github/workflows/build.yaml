@@ -120,10 +120,10 @@ jobs:
       - name: Create manifests
         shell: bash
         run: |
-          podman images
-          # TAGS="latest"
-          # IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
+          podman push ${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
 
+          # TAGS="latest"
           # if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
           #   TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"
           # fi

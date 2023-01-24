@@ -1,7 +1,7 @@
 # Stage 1 - Create yarn install skeleton layer
-FROM registry.access.redhat.com/ubi9/nodejs-18:latest AS packages
+FROM busybox AS packages
 
-RUN npm install -g yarn
+RUN echo "a"
 
 #WORKDIR /app
 # COPY package.json yarn.lock ./

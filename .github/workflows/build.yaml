@@ -100,7 +100,7 @@ jobs:
         with:
           registry: ${{ matrix.registry }}
           username: ${{ vars[matrix.username] }}
-          password: ${{ secres[matrix.password] }}
+          password: ${{ secrets[matrix.password] }}
       
       - name: Download image
         uses: ishworkh/docker-image-artifact-download@v1

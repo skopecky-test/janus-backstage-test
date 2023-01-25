@@ -83,8 +83,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            ${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-            ${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+            localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+            localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
           cache-from: type=local,src=${{ env.CACHE_PATH }}
           cache-to: type=local,dest=${{ env.CACHE_PATH }}
 
@@ -142,10 +142,10 @@ jobs:
           sleep 10
 
       - name: Import Docker images
-        run: docker pull --platform ${{ matrix.platform }} ${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+        run: docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
 
       - name: Docker inspect
-        run: docker buildx imagetools inspect ${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} | grep '${{ matrix.platform }}'
+        run: docker buildx imagetools inspect localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} | grep '${{ matrix.platform }}'
 
       # - name: Log in to Registry
       #   uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0

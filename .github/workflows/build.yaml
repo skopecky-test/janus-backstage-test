@@ -134,6 +134,7 @@ jobs:
             docker pull --platform $PLATFORM_2 localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-$PLATFORM
           done
           docker images 
+          podman images
 
       - name: Log in to Registry
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0

@@ -145,6 +145,9 @@ jobs:
 
       - name: Import Docker images
         run: docker pull --platform ${{ matrix.platform }} ${IMAGE_NAME}
+      
+      - name: Docker inspect
+        run: docker buildx imagetools inspect ${IMAGE_NAME} | grep '${{ matrix.platform }}'
 
       # - name: Log in to Registry
       #   uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0

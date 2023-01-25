@@ -101,18 +101,17 @@ jobs:
     strategy:
       matrix:
         registry: ${{ fromJson(needs.setup.outputs.registry_matrix) }}
-        platform: ${{ fromJson(needs.setup.outputs.dist_matrix) }}
         include:
           - registry: ghcr.io
             username: GHCR_USERNAME
             password: GITHUB_TOKEN
 
     steps:
-      - name: Setup Job Variables
-        id: set-build-variables
-        run: |
-          echo "PLATFORM_OS=$(echo ${{ matrix.platform }} |  cut -d/ -f1)" >> $GITHUB_OUTPUT
-          echo "PLATFORM_ARCH=$(echo ${{ matrix.platform }} |  cut -d/ -f2)" >> $GITHUB_OUTPUT
+      # - name: Setup Job Variables
+      #   id: set-build-variables
+      #   run: |
+      #     echo "PLATFORM_OS=$(echo ${{ matrix.platform }} |  cut -d/ -f1)" >> $GITHUB_OUTPUT
+      #     echo "PLATFORM_ARCH=$(echo ${{ matrix.platform }} |  cut -d/ -f2)" >> $GITHUB_OUTPUT
 
       - name: Download Docker registry data from build job
         uses: actions/download-artifact@v3
@@ -129,39 +128,44 @@ jobs:
 
       - name: Import Docker images
         run: |
-          docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-          docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+          for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do
+            PLATFORM_2=$(echo $PLATFORM | sed -e 's/-/\//g')
+            docker pull --platform $PLATFORM_2 localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-$PLATFORM
+            docker pull --platform $PLATFORM_2 localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-$PLATFORM
 
-      - name: Log in to Registry
-        uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
-        with:
-          registry: ${{ matrix.registry }}
-          username: ${{ vars[matrix.username] }}
-          password: ${{ secrets[matrix.password] }}
+      # - name: Log in to Registry
+      #   uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
+      #   with:
+      #     registry: ${{ matrix.registry }}
+      #     username: ${{ vars[matrix.username] }}
+      #     password: ${{ secrets[matrix.password] }}
 
-      - name: Create manifests
-        shell: bash
-        run: |
-          PLATFORM=$(echo ${{ matrix.platform }} | sed -e 's/\//-/g')
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
+      # - name: Create manifests
+      #   shell: bash
+      #   run: |
+      #     PLATFORM=$(echo ${{ matrix.platform }} | sed -e 's/\//-/g')
+      #     IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
 
-          docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
-          docker push --platform ${{matrix.platform}} $IMAGE_REPOSITORY
+      #     docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
+      #     docker push --platform ${{matrix.platform}} $IMAGE_REPOSITORY
 
-          # TODO: uncomment         
-          # docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
-          # docker push $IMAGE_REPOSITORY
+      #     # TODO: uncomment         
+      #     # docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
+      #     # docker push $IMAGE_REPOSITORY
 
-          TAGS="latest"
-          if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
-            TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"
-          fi
+      #     TAGS="latest"
+      #     if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
+      #       TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"
+      #     fi
 
-          for TAG in $TAGS; do \
-            docker manifest create $IMAGE_REPOSITORY:$TAG
-            docker manifest annotate $IMAGE_REPOSITORY:$TAG localhost:5000/${{ needs.setup.outputs.repository_name }}:$TAG-$PLATFORM; \
-            docker manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
-          done
+      #     for TAG in $TAGS; do \
+      #       docker manifest create $IMAGE_REPOSITORY:$TAG
+      #       for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
+      #           podman manifest add $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG-$PLATFORM; \
+      #       done
+      #       docker manifest annotate $IMAGE_REPOSITORY:$TAG localhost:5000/${{ needs.setup.outputs.repository_name }}:$TAG-$PLATFORM; \
+      #       docker manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
+      #     done
 
   # process-image-manifest:
   #   runs-on: ubuntu-latest
@@ -195,3 +199,4 @@ jobs:
   #           done
   #           podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
   #         done
+

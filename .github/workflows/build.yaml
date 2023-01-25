@@ -72,8 +72,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-            localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+            localhost:5000/${{ github.repository }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+            localhost:5000/${{ github.repository }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
 
       - name: Stop Docker registry
         run: docker stop registry
@@ -113,8 +113,8 @@ jobs:
         run: |
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
             PLATFORM_SLASH=$(echo $PLATFORM | sed -e 's/-/\//g')
-            docker pull --platform $PLATFORM_SLASH localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-$PLATFORM
-            docker pull --platform $PLATFORM_SLASH localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-$PLATFORM
+            docker pull --platform $PLATFORM_SLASH localhost:5000/${{ github.repository }}:latest-$PLATFORM
+            docker pull --platform $PLATFORM_SLASH localhost:5000/${{ github.repository }}:${{ needs.setup.outputs.image_tag }}-$PLATFORM
           done
 
       - name: Log in to Registry
@@ -127,20 +127,20 @@ jobs:
       - name: Push images
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"
 
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
-            docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-$PLATFORM $IMAGE_REPOSITORY:latest-$PLATFORM
+            docker tag localhost:5000/${{ github.repository }}:latest-$PLATFORM $IMAGE_REPOSITORY:latest-$PLATFORM
             docker push $IMAGE_REPOSITORY:latest-$PLATFORM
 
-            docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-$PLATFORM $IMAGE_REPOSITORY:${{ needs.setup.outputs.image_tag }}-$PLATFORM
+            docker tag localhost:5000/${{ github.repository }}:${{ needs.setup.outputs.image_tag }}-$PLATFORM $IMAGE_REPOSITORY:${{ needs.setup.outputs.image_tag }}-$PLATFORM
             docker push $IMAGE_REPOSITORY:${{ needs.setup.outputs.image_tag }}-$PLATFORM
           done
 
       - name: Create manifests
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"
           TAGS="latest"
           if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
             TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"

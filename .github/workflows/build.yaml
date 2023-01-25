@@ -81,12 +81,12 @@ jobs:
           context: backstage
           file: Dockerfile
           platforms: ${{ matrix.platform }}
-          push: true
+          load: true
+          push: false
           tags: |
             ${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
             ${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-          cache-from: |
-            type=local,src=${{ env.CACHE_PATH }}
+          cache-from: type=local,src=${{ env.CACHE_PATH }}
           cache-to: type=local,dest=${{ env.CACHE_PATH }}
 
       - name: Stop Docker registry

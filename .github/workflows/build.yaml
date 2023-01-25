@@ -120,14 +120,6 @@ jobs:
           name: docker-registry-data
           path: ${{ env.REGISTRY_PATH }}
 
-      - name: Enable Docker experimental
-        run: |
-          # Enable docker daemon experimental support.
-          echo '{"experimental": true}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
-          # Install QEMU multi-architecture support for docker buildx.
-          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
       - name: Start Docker registry
         run: |
           docker run --rm --detach --publish 5000:5000 \
@@ -166,7 +158,7 @@ jobs:
           for TAG in $TAGS; do \
             podman manifest create $IMAGE_REPOSITORY:$TAG
             for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
-                podman manifest add $IMAGE_REPOSITORY:$TAG docker://${{ needs.setup.outputs.repository_name }}:$TAG-$PLATFORM; \
+                podman manifest add $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG-$PLATFORM; \
             done
             podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done

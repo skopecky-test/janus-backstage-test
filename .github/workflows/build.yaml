@@ -117,8 +117,9 @@ jobs:
 
       - name: Import Docker images
         run: |
-          docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
-          docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
+          for TAG in "latest ${{ needs.setup.outputs.image_tag }}"; do
+            docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:$TAG-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
+          done
 
       - name: Log in to Registry
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
@@ -132,11 +133,10 @@ jobs:
         run: |
           IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
 
-          docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-job-variables.outputs.PLATFORM_DASH }} $IMAGE_REPOSITORY:latest-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
-          docker push $IMAGE_REPOSITORY:latest-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
-
-          docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-job-variables.outputs.PLATFORM_DASH }} $IMAGE_REPOSITORY:${{ needs.setup.outputs.image_tag }}-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
-          docker push $IMAGE_REPOSITORY:${{ needs.setup.outputs.image_tag }}-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
+          for TAG in "latest ${{ needs.setup.outputs.image_tag }}"; do
+            docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:$TAG-${{ steps.set-job-variables.outputs.PLATFORM_DASH }} $IMAGE_REPOSITORY:$TAG-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
+          docker push $IMAGE_REPOSITORY:$TAG-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
+          done
 
   process-image-manifests:
     runs-on: ubuntu-latest

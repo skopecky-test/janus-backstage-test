@@ -146,7 +146,7 @@ jobs:
           IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
 
           docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
-          docker push $IMAGE_REPOSITORY
+          docker push --platform ${{matrix.platform}} $IMAGE_REPOSITORY
 
           # TODO: uncomment         
           # docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
@@ -158,9 +158,9 @@ jobs:
           fi
 
           for TAG in $TAGS; do \
-            podman manifest create $IMAGE_REPOSITORY:$TAG-$PLATFORM
+            podman manifest create $IMAGE_REPOSITORY:$TAG
             podman manifest add $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG-$PLATFORM; \
-            podman manifest push $IMAGE_REPOSITORY:$TAG-$PLATFORM docker://$IMAGE_REPOSITORY:$TAG
+            podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done
 
   # process-image-manifest:

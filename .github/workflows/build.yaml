@@ -132,12 +132,11 @@ jobs:
           docker run --rm --detach --publish 5000:5000 \
             --volume ${REGISTRY_PATH}:/var/lib/registry \
             --name registry registry:2
-          sleep 10
 
       - name: Import Docker images
         run: |
-          docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-          docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+          podman pull localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+          podman pull localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
 
       - name: Docker inspect
         run: docker buildx imagetools inspect localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}

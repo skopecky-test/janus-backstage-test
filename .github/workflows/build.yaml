@@ -19,7 +19,7 @@ jobs:
       build_platforms: "linux/amd64,linux/arm64"
       image_registries: "ghcr.io"
 
-  build:
+  build-images:
     runs-on: ubuntu-latest
     needs: ["setup"]
     strategy:
@@ -64,14 +64,6 @@ jobs:
             --volume ${REGISTRY_PATH}:/var/lib/registry \
             --name registry registry:2
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
       - name: Build container image
         uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 #pin@v3.2.0
         with:
@@ -82,8 +74,6 @@ jobs:
           tags: |
             localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
             localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-          cache-from: type=local,src=${{ env.CACHE_PATH }}
-          cache-to: type=local,dest=${{ env.CACHE_PATH }}
 
       - name: Stop Docker registry
         run: docker stop registry
@@ -147,8 +137,6 @@ jobs:
 
           docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-job-variables.outputs.PLATFORM_DASH }} $IMAGE_REPOSITORY:${{ needs.setup.outputs.image_tag }}-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
           docker push $IMAGE_REPOSITORY:${{ needs.setup.outputs.image_tag }}-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
-
-          #TODO: Try to push only once
 
   process-image-manifests:
     runs-on: ubuntu-latest

@@ -46,7 +46,6 @@ jobs:
           echo "REGISTRY_MATRIX=$(echo -n "${{ inputs.image_registries }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
           # Create Image Tags
           echo "IMAGE_PLATFORM_TAGS=$(echo ${{ inputs.build_platforms }} | sed  -e 's/,/ /g' -e 's/\//-/g')" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
 
 
     outputs:

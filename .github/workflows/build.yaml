@@ -158,9 +158,9 @@ jobs:
           fi
 
           for TAG in $TAGS; do \
-            podman manifest create $IMAGE_REPOSITORY:$TAG
-            podman manifest add $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG-$PLATFORM; \
-            podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
+            docker manifest create $IMAGE_REPOSITORY:$TAG
+            docker manifest annotate $IMAGE_REPOSITORY:$TAG localhost:5000/$IMAGE_REPOSITORY:$TAG-$PLATFORM; \
+            docker manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done
 
   # process-image-manifest:

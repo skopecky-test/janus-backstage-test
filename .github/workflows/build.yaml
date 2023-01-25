@@ -167,7 +167,7 @@ jobs:
           for TAG in $TAGS; do \
             podman manifest create $IMAGE_REPOSITORY:$TAG
             for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
-                podman manifest add $IMAGE_REPOSITORY:$TAG docker://${{ needs.setup.outputs.repository_name }}:$TAG-$PLATFORM; \
+                podman manifest add $IMAGE_REPOSITORY:$TAG docker://${{ env.IMG_NAME }}:$TAG-$PLATFORM; \
             done
             podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done

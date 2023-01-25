@@ -141,25 +141,6 @@ jobs:
             docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-$PLATFORM $IMAGE_REPOSITORY:${{ needs.setup.outputs.image_tag }}-$PLATFORM
             docker push $IMAGE_REPOSITORY:${{ needs.setup.outputs.image_tag }}-$PLATFORM
           done
-          
-
-  process-image-manifests:
-    runs-on: ubuntu-latest
-    needs: ["setup", "push-images"]
-    strategy:
-      matrix:
-        registry: ${{ fromJson(needs.setup.outputs.registry_matrix) }}
-        include:
-          - registry: ghcr.io
-            username: GHCR_USERNAME
-            password: GITHUB_TOKEN
-    steps:
-      - name: Log in to Registry
-        uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
-        with:
-          registry: ${{ matrix.registry }}
-          username: ${{ vars[matrix.username] }}
-          password: ${{ secrets[matrix.password] }}
 
       - name: Create manifests
         shell: bash

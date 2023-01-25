@@ -30,8 +30,7 @@ jobs:
       - name: Setup Job Variables
         id: set-build-variables
         run: |
-          echo "PLATFORM_OS=$(echo ${{ matrix.platform }} |  cut -d/ -f1)" >> $GITHUB_OUTPUT
-          echo "PLATFORM_ARCH=$(echo ${{ matrix.platform }} |  cut -d/ -f2)" >> $GITHUB_OUTPUT
+          echo "PLATFORM_DASH=$(echo ${{ matrix.platform }} | sed -e 's/\//-/g')" >> $GITHUB_OUTPUT
 
       - name: checkout repo
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # pin@v3
@@ -72,8 +71,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            localhost:5000/${{ github.repository }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-            localhost:5000/${{ github.repository }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+            localhost:5000/${{ github.repository }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_DASH }}
+            localhost:5000/${{ github.repository }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_DASH }}
 
       - name: Stop Docker registry
         run: docker stop registry

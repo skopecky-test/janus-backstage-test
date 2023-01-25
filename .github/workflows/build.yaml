@@ -135,7 +135,7 @@ jobs:
 
           for TAG in "latest ${{ needs.setup.outputs.image_tag }}"; do
             docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:$TAG-${{ steps.set-job-variables.outputs.PLATFORM_DASH }} $IMAGE_REPOSITORY:$TAG-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
-          docker push $IMAGE_REPOSITORY:$TAG-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
+            docker push $IMAGE_REPOSITORY:$TAG-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
           done
 
   process-image-manifests:

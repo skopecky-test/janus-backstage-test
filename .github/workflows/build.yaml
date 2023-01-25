@@ -142,6 +142,7 @@ jobs:
       - name: Create manifests
         shell: bash
         run: |
+          PLATFORM=$(echo ${{ matrix.platform }} | sed -e 's/\//-/g')
           IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
           docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
           docker push $IMAGE_REPOSITORY
@@ -157,9 +158,7 @@ jobs:
           # TODO: Push image
           for TAG in $TAGS; do \
             podman manifest create $IMAGE_REPOSITORY:$TAG
-            for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
-                podman manifest add $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG-$PLATFORM; \
-            done
+            podman manifest add $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG-$PLATFORM; \
             podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done
 

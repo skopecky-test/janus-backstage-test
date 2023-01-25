@@ -157,19 +157,19 @@ jobs:
           docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
           docker push $IMAGE_REPOSITORY
 
-          # TAGS="latest"
-          # if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
-          #   TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"
-          # fi
+          TAGS="latest"
+          if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
+            TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"
+          fi
 
-          # # TODO: Push image
-          # for TAG in $TAGS; do \
-          #   podman manifest create $IMAGE_REPOSITORY:$TAG
-          #   for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
-          #       podman manifest add $IMAGE_REPOSITORY:$TAG docker://${{ needs.setup.outputs.repository_name }}:$TAG-$PLATFORM; \
-          #   done
-          #   podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
-          # done
+          # TODO: Push image
+          for TAG in $TAGS; do \
+            podman manifest create $IMAGE_REPOSITORY:$TAG
+            for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
+                podman manifest add $IMAGE_REPOSITORY:$TAG docker://${{ needs.setup.outputs.repository_name }}:$TAG-$PLATFORM; \
+            done
+            podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
+          done
 
   # process-image-manifest:
   #   runs-on: ubuntu-latest

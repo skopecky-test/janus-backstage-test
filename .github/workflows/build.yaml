@@ -81,8 +81,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            localhost:5000/${{ needs.setup.outputs.repository_name }}":latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-            localhost:5000/${{ needs.setup.outputs.repository_name }}":${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+            localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+            localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
           cache-from: type=local,src=${{ env.CACHE_PATH }}
           cache-to: type=local,dest=${{ env.CACHE_PATH }}
 
@@ -137,8 +137,8 @@ jobs:
 
       - name: Import Docker images
         run: |
-          docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}":latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-          docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}":${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+          docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+          docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
 
       - name: Log in to Registry
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
@@ -150,11 +150,11 @@ jobs:
       - name: Create manifests
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}"
-          docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}":${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ needs.setup.outputs.repository_name }}
+          docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
           docker push $IMAGE_REPOSITORY
           
-          docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}":${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
+          docker tag localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} $IMAGE_REPOSITORY
           docker push $IMAGE_REPOSITORY
 
           # TAGS="latest"

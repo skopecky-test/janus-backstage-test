@@ -70,10 +70,6 @@ jobs:
             --volume ${REGISTRY_PATH}:/var/lib/registry \
             --name registry registry:2
 
-      - name: check someting
-        run: |
-          docker ps -a
-
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -154,7 +150,7 @@ jobs:
           docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
 
       - name: Docker inspect
-        run: podman images
+        run: docker buildx imagetools inspect localhost:5000/${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} | grep '${{ matrix.platform }}'
 
       # - name: Log in to Registry
       #   uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0

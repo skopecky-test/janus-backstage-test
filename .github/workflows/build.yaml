@@ -159,7 +159,7 @@ jobs:
 
           for TAG in $TAGS; do \
             docker manifest create $IMAGE_REPOSITORY:$TAG
-            docker manifest annotate $IMAGE_REPOSITORY:$TAG localhost:5000/$IMAGE_REPOSITORY:$TAG-$PLATFORM; \
+            docker manifest annotate $IMAGE_REPOSITORY:$TAG localhost:5000/${{ needs.setup.outputs.repository_name }}:$TAG-$PLATFORM; \
             docker manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done
 

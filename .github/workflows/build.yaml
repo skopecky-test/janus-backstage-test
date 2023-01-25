@@ -118,8 +118,8 @@ jobs:
       - name: Import Docker images
         run: |
           for TAG in "latest ${{ needs.setup.outputs.image_tag }}"; do \
-            echo $TAG \ 
-            docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:$TAG-${{ steps.set-job-variables.outputs.PLATFORM_DASH }} \
+            echo $TAG
+            docker pull --platform ${{ matrix.platform }} localhost:5000/${{ needs.setup.outputs.repository_name }}:$TAG-${{ steps.set-job-variables.outputs.PLATFORM_DASH }}
           done
 
       - name: Log in to Registry

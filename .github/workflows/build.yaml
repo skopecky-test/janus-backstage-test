@@ -81,13 +81,12 @@ jobs:
           context: backstage
           file: Dockerfile
           platforms: ${{ matrix.platform }}
-          push: false
+          push: true
           tags: |
             ${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
             ${{ needs.setup.outputs.repository_name }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
           cache-from: |
             type=local,src=${{ env.CACHE_PATH }}
-            ghcr.io/cdalvaro/docker-salt-master:latest
           cache-to: type=local,dest=${{ env.CACHE_PATH }}
 
       - name: Stop Docker registry
@@ -134,8 +133,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: docker-registry-data
-          path: ${{ env.REGISTRY_PATH }} 
-      
+          path: ${{ env.REGISTRY_PATH }}
+
       - name: Start Docker registry
         run: |
           docker run --rm --detach --publish 5000:5000 \
@@ -144,10 +143,10 @@ jobs:
           sleep 10
 
       - name: Import Docker images
-        run: docker pull --platform ${{ matrix.platform }} ${IMAGE_NAME}
-      
+        run: docker pull --platform ${{ matrix.platform }} ${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+
       - name: Docker inspect
-        run: docker buildx imagetools inspect ${IMAGE_NAME} | grep '${{ matrix.platform }}'
+        run: docker buildx imagetools inspect ${{ needs.setup.outputs.repository_name }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }} | grep '${{ matrix.platform }}'
 
       # - name: Log in to Registry
       #   uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0

@@ -148,7 +148,7 @@ jobs:
 
   process-image-manifests:
     runs-on: ubuntu-latest
-    needs: ["setup", "build"]
+    needs: ["setup", "build", "push-images"]
     strategy:
       matrix:
         registry: ${{ fromJson(needs.setup.outputs.registry_matrix) }}

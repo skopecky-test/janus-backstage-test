@@ -111,7 +111,7 @@ jobs:
         run: |
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
             PLATFORM_SLASH=$(echo $PLATFORM | sed -e 's/-/\//g')
-            for TAG in "latest ${{ needs.setup.outputs.image_tag }}"; do \
+            for TAG in latest ${{ needs.setup.outputs.image_tag }}; do \
               docker pull --platform $PLATFORM_SLASH localhost:5000/${{ github.repository }}:$TAG-$PLATFORM
             done
           done

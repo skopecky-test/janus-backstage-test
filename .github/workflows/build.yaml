@@ -9,7 +9,6 @@ on:
 
 env:
   REGISTRY_PATH: ${{ github.workspace }}/registry
-  CACHE_PATH: /tmp/.buildx-cache
 
 jobs:
   setup:
@@ -46,15 +45,15 @@ jobs:
         with:
           node-version: 18
 
-      # - name: Create Backstage application
-      #   run: |
-      #     echo backstage | npx @backstage/create-app
-      #     cp ./Dockerfile ./.dockerignore ./backstage/
-
       - name: Create Backstage application
         run: |
-          mkdir backstage
-          cp ./Dockerfile ./.dockerignore
+          echo backstage | npx @backstage/create-app
+          cp ./Dockerfile ./.dockerignore ./backstage/
+
+      # - name: Create Backstage application
+      #   run: |
+      #     mkdir backstage
+      #     cp ./Dockerfile ./.dockerignore
 
       - name: Start Docker registry
         run: |

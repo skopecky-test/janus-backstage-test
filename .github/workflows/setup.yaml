@@ -9,16 +9,11 @@ on:
       build_platforms:
         required: true
         type: string
-      image_registries:
-        required: true
-        type: string
     outputs:
       image_tag:
         value: ${{ jobs.setup.outputs.image_tag }}
       dist_matrix:
         value: ${{ jobs.setup.outputs.dist_matrix }}
-      registry_matrix:
-        value: ${{ jobs.setup.outputs.registry_matrix }}
       image_platform_tags:
         value: ${{ jobs.setup.outputs.image_platform_tags }}
 
@@ -29,27 +24,19 @@ jobs:
       - name: Setup Workflow Variables
         id: set-variables
         run: |
-          function csv_to_json {
-            echo -n "$1" | jq -csR '. | split(",")'
-          }
-
           # Set versions based on presence of tag
           if [[ "${{ github.ref }}" =~ ^refs/tags/ ]]; then
             echo "IMAGE_TAG=$(echo ${GITHUB_REF/refs\/tags\//})" >> $GITHUB_OUTPUT
           else
             echo "IMAGE_TAG=${{ inputs.default_tag_version }}" >> $GITHUB_OUTPUT
           fi
-          
+
           # Create Distribution Matrix
-          echo "DIST_MATRIX=$(csv_to_json ${{ inputs.build_platforms }})" >> $GITHUB_OUTPUT
-          # Create Registry Matrix
-          echo "REGISTRY_MATRIX=$(csv_to_json ${{ inputs.image_registries }})" >> $GITHUB_OUTPUT
+          echo "DIST_MATRIX=$(echo -n "${{ inputs.build_platforms }}" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
           # Create Image Tags
           echo "IMAGE_PLATFORM_TAGS=$(echo ${{ inputs.build_platforms }} | sed  -e 's/,/ /g' -e 's/\//-/g')" >> $GITHUB_OUTPUT
-
 
     outputs:
       image_tag: ${{ steps.set-variables.outputs.IMAGE_TAG}}
       dist_matrix: ${{ steps.set-variables.outputs.DIST_MATRIX }}
-      registry_matrix: ${{ steps.set-variables.outputs.REGISTRY_MATRIX }}
       image_platform_tags: ${{ steps.set-variables.outputs.IMAGE_PLATFORM_TAGS }}

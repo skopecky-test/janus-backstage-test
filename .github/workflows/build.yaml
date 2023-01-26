@@ -87,11 +87,16 @@ jobs:
     needs: ["setup", "build-images"]
     strategy:
       matrix:
-        registry: ["ghcr.io"]
+        registry: ["ghcr.io", ]
         include:
           - registry: ghcr.io
             username: GHCR_USERNAME
             password: GITHUB_TOKEN
+            repo: skopecky-test/janus-backstage-test
+          - registry: quay.io
+            username: QUAY_USERNAME
+            password: QUAY_token
+            repo: skopecky/janus-backstage-test
 
     steps:
       - name: Download Docker registry data from build job
@@ -126,7 +131,7 @@ jobs:
       - name: Push images
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repo }}"
 
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
             for TAG in latest ${{ needs.setup.outputs.image_tag }}; do \
@@ -138,7 +143,7 @@ jobs:
       - name: Create and push manifests
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repo }}"
           TAGS="latest"
           if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
             TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"
@@ -151,4 +156,3 @@ jobs:
             done
             podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done
-

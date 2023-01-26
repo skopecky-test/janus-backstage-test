@@ -76,7 +76,7 @@ jobs:
       - name: Stop Docker registry
         run: docker stop registry
 
-      - name: Upload Docker registry data for testing
+      - name: Upload Docker registry data
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce #pin@v3.1.2
         with:
           name: docker-registry-data
@@ -111,8 +111,9 @@ jobs:
         run: |
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
             PLATFORM_SLASH=$(echo $PLATFORM | sed -e 's/-/\//g')
-            docker pull --platform $PLATFORM_SLASH localhost:5000/${{ github.repository }}:latest-$PLATFORM
-            docker pull --platform $PLATFORM_SLASH localhost:5000/${{ github.repository }}:${{ needs.setup.outputs.image_tag }}-$PLATFORM
+            for TAG in "latest ${{ needs.setup.outputs.image_tag }}"; do \
+              docker pull --platform $PLATFORM_SLASH localhost:5000/${{ github.repository }}:$TAG-$PLATFORM
+            done
           done
 
       - name: Log in to Registry
@@ -135,7 +136,7 @@ jobs:
             docker push $IMAGE_REPOSITORY:${{ needs.setup.outputs.image_tag }}-$PLATFORM
           done
 
-      - name: Create manifests
+      - name: Create and push manifests
         shell: bash
         run: |
           IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"

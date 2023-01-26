@@ -130,8 +130,8 @@ jobs:
 
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
             for TAG in latest ${{ needs.setup.outputs.image_tag }}; do \
-              docker tag localhost:5000/${{ github.repository }}:$TAG-$PLATFORM $IMAGE_REPOSITORY:latest-$PLATFORM
-              docker push $IMAGE_REPOSITORY:latest-$PLATFORM
+              docker tag localhost:5000/${{ github.repository }}:$TAG-$PLATFORM $IMAGE_REPOSITORY:$TAG-$PLATFORM
+              docker push $IMAGE_REPOSITORY:$TAG-$PLATFORM
             done
           done
 

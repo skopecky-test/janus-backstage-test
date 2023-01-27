@@ -75,7 +75,7 @@ jobs:
           push: true
           tags: |
             ${{ needs.setup.outputs.image_repository }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-            ${{ needs.setup.outputs.image_repository }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
+            # ${{ needs.setup.outputs.image_repository }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
 
   process-image-manifest:
     runs-on: ubuntu-latest

@@ -61,6 +61,10 @@ jobs:
         run: |
           mkdir backstage
           cp ./Dockerfile ./.dockerignore
+      
+      - name: checl
+        run: |
+          echo $
 
       - name: Build container image and push
         uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 #pin@v3.2.0
@@ -94,8 +98,10 @@ jobs:
           fi
 
           for TAG in $TAGS; do \
+            echo $TAG
             podman manifest create ${{ needs.setup.outputs.image_repository }}:$TAG
             for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
+              echo $PLATFORM
                 podman manifest add ${{ needs.setup.outputs.image_repository }}:$TAG docker://${{ needs.setup.outputs.image_repository }}:$TAG-$PLATFORM; \
             done
             podman manifest push ${{ needs.setup.outputs.image_repository }}:$TAG docker://${{ needs.setup.outputs.image_repository }}:$TAG

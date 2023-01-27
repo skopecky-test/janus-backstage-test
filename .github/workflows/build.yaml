@@ -196,6 +196,7 @@ jobs:
         with:
           context: backstage
           file: Dockerfile
+          platforms: ${{ matrix.platform }}
           push: true
           tags: |
             ${{ needs.setup.outputs.image_repository }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}

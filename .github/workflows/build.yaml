@@ -80,11 +80,15 @@ jobs:
     needs: ["setup", "build-images"]
     strategy:
       matrix:
-        registry: ["ghcr.io"]
         include:
           - registry: ghcr.io
             username: GHCR_USERNAME
             password: GITHUB_TOKEN
+            repo: skopecky-test
+          - registry: quay.io
+            username: QUAY_USERNAME
+            password: QUAY_TOKEN
+            repo: skopecky
 
     steps:
       - name: Log in to Registry

@@ -8,7 +8,6 @@ on:
       - v*
 
 env:
-  REGISTRY_PATH: ${{ github.workspace }}/registry
   MAIN_REGISTRY: ghcr.io
   MAIN_USERNAME: GHCR_USERNAME
   MAIN_PASSWORD: GITHUB_TOKEN
@@ -84,14 +83,9 @@ jobs:
           - registry: ghcr.io
             username: GHCR_USERNAME
             password: GITHUB_TOKEN
-            repository: skopecky-test/janus-backstage-test
-          - registry: quay.io
-            username: QUAY_USERNAME
-            password: QUAY_TOKEN
-            repository: skopecky/janus-backstage-test
 
     steps:
-      - name: Log in to Registry
+      - name: Log in to Registry to pull images
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
         with:
           registry: ${{ env.MAIN_REGISTRY }}
@@ -112,7 +106,7 @@ jobs:
         run: |
           podman logout ${{ env.MAIN_REGISTRY }}
 
-      - name: Log in to Registry
+      - name: Log in to Registry to push images
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
         with:
           registry: ${{ matrix.registry }}
@@ -122,7 +116,7 @@ jobs:
       - name: Push images
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repository }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"
 
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
             for TAG in latest ${{ needs.setup.outputs.image_tag }}; do \
@@ -134,7 +128,7 @@ jobs:
       - name: Create and push manifests
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repository }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"
           TAGS="latest"
           if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
             TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"

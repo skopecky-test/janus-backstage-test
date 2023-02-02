@@ -88,7 +88,7 @@ jobs:
           - registry: quay.io
             username: QUAY_USERNAME
             password: QUAY_TOKEN
-            repo: skopecky
+            repository: skopecky
 
     steps:
       - name: Log in to Registry
@@ -122,7 +122,7 @@ jobs:
       - name: Push images
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repository }}"
 
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
             for TAG in latest ${{ needs.setup.outputs.image_tag }}; do \
@@ -134,7 +134,7 @@ jobs:
       - name: Create and push manifests
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repository }}"
           TAGS="latest"
           if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
             TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"

@@ -81,9 +81,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - registry: ghcr.io
-            username: GHCR_USERNAME
-            password: GITHUB_TOKEN
+          - registry: ${{ env.MAIN_REGISTRY }}
+            username: ${{ env.MAIN_USERNAME }}
+            password: ${{ env.MAIN_PASSWORD }}
             repo: skopecky-test
           - registry: quay.io
             username: QUAY_USERNAME

@@ -84,11 +84,11 @@ jobs:
           - registry: ghcr.io
             username: GHCR_USERNAME
             password: GITHUB_TOKEN
-            repository: skopecky-test
+            repository: skopecky-test/janus-backstage-test
           - registry: quay.io
             username: QUAY_USERNAME
             password: QUAY_TOKEN
-            repository: skopecky
+            repository: skopecky/janus-backstage-test
 
     steps:
       - name: Log in to Registry

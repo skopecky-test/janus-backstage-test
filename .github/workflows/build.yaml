@@ -87,6 +87,13 @@ jobs:
             password: GITHUB_TOKEN
 
     steps:
+      - name: Log in to Registry
+        uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
+        with:
+          registry: ${{ matrix.registry }}
+          username: ${{ vars[matrix.username] }}
+          password: ${{ secrets[matrix.password] }}
+
       - name: Import Docker images
         run: |
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
@@ -95,13 +102,6 @@ jobs:
               docker pull --platform $PLATFORM_SLASH ${{ env.MAIN_REGISTRY }}/${{ github.repository }}:$TAG-$PLATFORM
             done
           done
-
-      - name: Log in to Registry
-        uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
-        with:
-          registry: ${{ matrix.registry }}
-          username: ${{ vars[matrix.username] }}
-          password: ${{ secrets[matrix.password] }}
 
       - name: Push images
         shell: bash

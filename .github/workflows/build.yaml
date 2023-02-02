@@ -107,6 +107,11 @@ jobs:
             done
           done
 
+      - name: Log out of registry
+        shell: bash
+        run: |
+          podman logout ${{ env.MAIN_REGISTRY }}
+
       - name: Log in to Registry
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
         with:

@@ -81,9 +81,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - registry: ${{ env.MAIN_REGISTRY }}
-            username: ${{ env.MAIN_USERNAME }}
-            password: ${{ env.MAIN_PASSWORD }}
+          - registry: ghcr.io
+            username: GHCR_USERNAME
+            password: GITHUB_TOKEN
             repo: skopecky-test
           - registry: quay.io
             username: QUAY_USERNAME
@@ -94,9 +94,9 @@ jobs:
       - name: Log in to Registry
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
         with:
-          registry: ${{ matrix.registry }}
-          username: ${{ vars[matrix.username] }}
-          password: ${{ secrets[matrix.password] }}
+          registry: ${{ env.MAIN_REGISTRY }}
+          username: ${{ vars[env.MAIN_USERNAME] }}
+          password: ${{ secrets[env.MAIN_PASSWORD] }}
 
       - name: Import Docker images
         run: |
@@ -106,6 +106,13 @@ jobs:
               docker pull --platform $PLATFORM_SLASH ${{ env.MAIN_REGISTRY }}/${{ github.repository }}:$TAG-$PLATFORM
             done
           done
+
+      - name: Log in to Registry
+        uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
+        with:
+          registry: ${{ matrix.registry }}
+          username: ${{ vars[matrix.username] }}
+          password: ${{ secrets[matrix.password] }}
 
       - name: Push images
         shell: bash

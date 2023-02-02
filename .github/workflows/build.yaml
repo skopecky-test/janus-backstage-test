@@ -147,3 +147,4 @@ jobs:
             done
             podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done
+

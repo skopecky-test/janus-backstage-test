@@ -84,7 +84,7 @@ jobs:
           - registry: ghcr.io
             username: GHCR_USERNAME
             password: GITHUB_TOKEN
-            repo: skopecky-test
+            repository: skopecky-test
           - registry: quay.io
             username: QUAY_USERNAME
             password: QUAY_TOKEN

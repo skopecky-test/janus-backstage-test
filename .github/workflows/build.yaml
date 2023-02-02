@@ -70,6 +70,7 @@ jobs:
           file: Dockerfile
           platforms: ${{ matrix.platform }}
           push: true
+          provenance: true
           tags: |
             ${{ env.MAIN_REGISTRY }}/${{ github.repository }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_DASH }}
             ${{ env.MAIN_REGISTRY }}/${{ github.repository }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_DASH }}

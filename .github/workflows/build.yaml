@@ -11,6 +11,7 @@ env:
   MAIN_REGISTRY: ghcr.io
   MAIN_USERNAME: GHCR_USERNAME
   MAIN_PASSWORD: GITHUB_TOKEN
+  MAIN_REPOSITORY: janus-idp/redhat-backstage-build
 
 jobs:
   setup:
@@ -45,11 +46,6 @@ jobs:
         with:
           node-version: 18
 
-      # - name: Create Backstage application
-      #   run: |
-      #     echo backstage | npx @backstage/create-app
-      #     cp ./Dockerfile ./.dockerignore ./backstage/
-
       - name: Create Backstage application
         run: |
           mkdir backstage
@@ -62,17 +58,17 @@ jobs:
           username: ${{ vars[env.MAIN_USERNAME] }}
           password: ${{ secrets[env.MAIN_PASSWORD] }}
 
-      - name: Build container images
+      - name: Build container image
         uses: docker/build-push-action@37abcedcc1da61a57767b7588cb9d03eb57e28b3 #pin@v3.3.0
         with:
           context: backstage
           file: Dockerfile
           platforms: ${{ matrix.platform }}
-          push: true
           provenance: false
+          push: true
           tags: |
-            ${{ env.MAIN_REGISTRY }}/${{ github.repository }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_DASH }}
-            ${{ env.MAIN_REGISTRY }}/${{ github.repository }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_DASH }}
+            ${{ env.MAIN_REGISTRY }}/${{ env.MAIN_REPOSITORY }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_DASH }}
+            ${{ env.MAIN_REGISTRY }}/${{ env.MAIN_REPOSITORY }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_DASH }}
 
   push-images-and-manifests:
     runs-on: ubuntu-latest
@@ -83,6 +79,12 @@ jobs:
           - registry: ghcr.io
             username: GHCR_USERNAME
             password: GITHUB_TOKEN
+            repository: skopecky-test/janus-backstage-test
+          # Define more image repositories like this:
+          - registry: quay.io
+            username: QUAY_USERNAME
+            password: QUAY_TOKEN
+            repository: skopecky/janus-backstage-test
 
     steps:
       - name: Log in to Registry to pull images
@@ -97,7 +99,7 @@ jobs:
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
             PLATFORM_SLASH=$(echo $PLATFORM | sed -e 's/-/\//g')
             for TAG in latest ${{ needs.setup.outputs.image_tag }}; do \
-              docker pull --platform $PLATFORM_SLASH ${{ env.MAIN_REGISTRY }}/${{ github.repository }}:$TAG-$PLATFORM
+              docker pull --platform $PLATFORM_SLASH ${{ env.MAIN_REGISTRY }}/${{ env.MAIN_REPOSITORY }}:$TAG-$PLATFORM
             done
           done
 
@@ -116,11 +118,11 @@ jobs:
       - name: Push images
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repository }}"
 
           for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
             for TAG in latest ${{ needs.setup.outputs.image_tag }}; do \
-              docker tag ${{ env.MAIN_REGISTRY }}/${{ github.repository }}:$TAG-$PLATFORM $IMAGE_REPOSITORY:$TAG-$PLATFORM
+              docker tag ${{ env.MAIN_REGISTRY }}/${{ env.MAIN_REPOSITORY }}:$TAG-$PLATFORM $IMAGE_REPOSITORY:$TAG-$PLATFORM
               docker push $IMAGE_REPOSITORY:$TAG-$PLATFORM
             done
           done
@@ -128,7 +130,7 @@ jobs:
       - name: Create and push manifests
         shell: bash
         run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ github.repository }}"
+          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repository }}"
           TAGS="latest"
           if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
             TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"
@@ -141,4 +143,3 @@ jobs:
             done
             podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
           done
-

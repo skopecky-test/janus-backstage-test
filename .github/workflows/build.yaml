@@ -11,7 +11,7 @@ env:
   MAIN_REGISTRY: ghcr.io
   MAIN_USERNAME: GHCR_USERNAME
   MAIN_PASSWORD: GITHUB_TOKEN
-  MAIN_REPOSITORY: skopecky-test/janus-backstage-test
+  MAIN_REPOSITORY: ${{ github.repository }}
 
 jobs:
   setup:

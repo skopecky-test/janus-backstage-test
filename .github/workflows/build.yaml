@@ -3,14 +3,13 @@ on:
   push:
     branches:
       - main
-      - test
     tags:
       - v*
 
 env:
   MAIN_REGISTRY: ghcr.io
-  MAIN_USERNAME: GHCR_USERNAME
-  MAIN_PASSWORD: GITHUB_TOKEN
+  MAIN_USERNAME: ${{ github.actor }}
+  MAIN_PASSWORD: ${{ github.token }}
   MAIN_REPOSITORY: ${{ github.repository }}
 
 jobs:
@@ -49,14 +48,14 @@ jobs:
       - name: Create Backstage application
         run: |
           mkdir backstage
-          cp ./Dockerfile ./.dockerignore
+          cp ./Dockerfile ./.dockerignore ./backstage/
 
       - name: Log in to Registry
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
         with:
           registry: ${{ env.MAIN_REGISTRY }}
-          username: ${{ vars[env.MAIN_USERNAME] }}
-          password: ${{ secrets[env.MAIN_PASSWORD] }}
+          username: ${{ env.MAIN_USERNAME }}
+          password: ${{ env.MAIN_PASSWORD }}
 
       - name: Build container image
         uses: docker/build-push-action@37abcedcc1da61a57767b7588cb9d03eb57e28b3 #pin@v3.3.0
@@ -77,13 +76,13 @@ jobs:
       matrix:
         include:
           - registry: ghcr.io
-            username: GHCR_USERNAME
-            password: GITHUB_TOKEN
+            username: ${{ github.actor }}
+            password: ${{ github.token }}
             repository: ${{ github.repository }}
           # Define more image repositories like this:
           - registry: quay.io
-            username: QUAY_USERNAME
-            password: QUAY_TOKEN
+            username: ${{ vars[QUAY_USERNAME] }}
+            password: ${{ secrets[matrix.password] }}
             repository: skopecky/janus-backstage-test
 
     steps:
@@ -91,8 +90,8 @@ jobs:
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
         with:
           registry: ${{ env.MAIN_REGISTRY }}
-          username: ${{ vars[env.MAIN_USERNAME] }}
-          password: ${{ secrets[env.MAIN_PASSWORD] }}
+          username: ${{ env.MAIN_USERNAME }}
+          password: ${{ env.MAIN_PASSWORD }}
 
       - name: Import Docker images
         run: |
@@ -112,8 +111,8 @@ jobs:
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
         with:
           registry: ${{ matrix.registry }}
-          username: ${{ vars[matrix.username] }}
-          password: ${{ secrets[matrix.password] }}
+          username: ${{ matrix.username }}
+          password: ${{ matrix.password }}
 
       - name: Push images
         shell: bash

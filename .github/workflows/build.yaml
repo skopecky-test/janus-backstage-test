@@ -77,8 +77,8 @@ jobs:
       matrix:
         include:
           - registry: ghcr.io
-            username: ${{ github.actor }}
-            password: ${{ github.token }}
+            username: GHCR_USERNAME
+            password: GITHUB_TOKEN
             repository: ${{ github.repository }}
           # Define more image repositories like this:
           - registry: quay.io

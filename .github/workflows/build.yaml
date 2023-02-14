@@ -78,7 +78,7 @@ jobs:
         include:
           - registry: ghcr.io
             username: ${{ vars.GHCR_USERNAME }}
-            password: ${{ github.token }}
+            password: ${{ env.MAIN_PASSWORD }}
             repository: ${{ github.repository }}
           # Define more image repositories like this:
           # - registry: quay.io

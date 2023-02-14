@@ -82,8 +82,8 @@ jobs:
             repository: ${{ github.repository }}
           # Define more image repositories like this:
           - registry: quay.io
-            username: ${{ vars.QUAY_USERNAME }}
-            password: ${{ secrets.QUAY_TOKEN }}
+            username: QUAY_USERNAME
+            password: QUAY_TOKEN
             repository: skopecky/janus-backstage-test
 
     steps:
@@ -112,8 +112,8 @@ jobs:
         uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
         with:
           registry: ${{ matrix.registry }}
-          username: ${{ matrix.username }}
-          password: ${{ matrix.password }}
+          username: ${{ vars[matrix.username] }}
+          password: ${{ secrets[matrix.password] }}
 
       - name: Push images
         shell: bash

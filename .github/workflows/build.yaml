@@ -114,119 +114,71 @@ on:
       - v*
 
 env:
-  DEFAULT_TAG_VERSION: "latest"
-  BUILD_PLATFORMS: "linux/amd64,linux/arm64"
-  IMAGE_REGISTRY: "ghcr.io"
+  MAIN_REGISTRY: ghcr.io
+  MAIN_USERNAME: ${{ github.actor }}
+  MAIN_PASSWORD: ${{ github.token }}
+  MAIN_REPOSITORY: ${{ github.repository }}
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Workflow Variables
-        id: set-variables
-        run: |
-          echo "REPOSITORY_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_OUTPUT
-          echo "IMAGE_REPOSITORY=${{ env.IMAGE_REGISTRY}}/$GITHUB_REPOSITORY" >> $GITHUB_OUTPUT
+    uses: skopecky-test/.github/.github/workflows/setup.yaml
+    with:
+      default_tag_version: "latest"
+      build_platforms: "linux/amd64,linux/arm64"
 
-          # Set versions based on presence of tag
-          if [[ "${{ github.ref }}" =~ ^refs/tags/ ]]; then
-            echo "IMAGE_TAG=$(echo ${GITHUB_REF/refs\/tags\//})" >> $GITHUB_OUTPUT
-          else
-            echo "IMAGE_TAG=${DEFAULT_TAG_VERSION}" >> $GITHUB_OUTPUT
-          fi
-
-          # Create Distribution Matrix
-          echo "DIST_MATRIX=$(echo -n "$BUILD_PLATFORMS" | jq -csR '. | split(",")')" >> $GITHUB_OUTPUT
-          # Create Image Tags
-          echo "IMAGE_PLATFORM_TAGS=$(echo $BUILD_PLATFORMS | sed  -e 's/,/ /g' -e 's/\//-/g')" >> $GITHUB_OUTPUT
-
-    outputs:
-      repository_name: ${{ steps.set-variables.outputs.REPOSITORY_NAME }}
-      image_repository: ${{ steps.set-variables.outputs.IMAGE_REPOSITORY }}
-      image_tag: ${{ steps.set-variables.outputs.IMAGE_TAG}}
-      dist_matrix: ${{ steps.set-variables.outputs.DIST_MATRIX }}
-      image_platform_tags: ${{ steps.set-variables.outputs.IMAGE_PLATFORM_TAGS }}
-
-
-  build:
+  build-images:
     runs-on: ubuntu-latest
     needs: ["setup"]
     strategy:
       matrix:
         platform: ${{ fromJson(needs.setup.outputs.dist_matrix) }}
-    steps:
-      - name: Setup Job Variables
-        id: set-build-variables
-        run: |
-          echo "PLATFORM_OS=$(echo ${{ matrix.platform }} |  cut -d/ -f1)" >> $GITHUB_OUTPUT
-          echo "PLATFORM_ARCH=$(echo ${{ matrix.platform }} |  cut -d/ -f2)" >> $GITHUB_OUTPUT
 
+    steps:
       - name: checkout repo
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # pin@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@e81a89b1732b9c48d79cd809d8d81d79c4647a18 #pin@v2.1.0
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@8c0edbc76e98fa90f69d9a2c020dcb50019dc325 #pin@v2.2.1
-
-      - name: Docker Login
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a #pin@v2.1.0
-        with:
-          registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #pin@v3.5.1
         with:
           node-version: 18
 
-      - name: Setup git
-        run: |
-          git config --global user.name "$GITHUB_ACTOR"
-          git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
       - name: Create Backstage application
         run: |
           mkdir backstage
-          cp ./Dockerfile ./.dockerignore
+          cp ./Dockerfile ./.dockerignore ./backstage/
 
-      - name: Build container image and push
-        uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 #pin@v3.2.0
+      - name: Do stuff
+        uses: skopecky-test/.github/.github/actions/build-and-push
         with:
+          platform: ${{ matrix.platform }}
+          image_tag: ${{ needs.setup.outputs.image_tag }}
           context: backstage
-          file: Dockerfile
-          platforms: ${{ matrix.platform }}
-          push: true
-          tags: |
-            ${{ needs.setup.outputs.image_repository }}:latest-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
-            ${{ needs.setup.outputs.image_repository }}:${{ needs.setup.outputs.image_tag }}-${{ steps.set-build-variables.outputs.PLATFORM_OS }}-${{ steps.set-build-variables.outputs.PLATFORM_ARCH }}
 
-
-  process-image-manifest:
+  push-images-and-manifests:
     runs-on: ubuntu-latest
-    name: process-image-manifest
-    needs: ["setup", "build"]
-    steps:
-      - name: Log in to Registry
-        uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: ${{ env.IMAGE_REGISTRY }}
-      - name: "Append to Bundle Image Manifest"
-        shell: bash
-        run: |
-          TAGS="latest" 
+    needs: ["setup", "build-images"]
+    strategy:
+      matrix:
+        include:
+          - registry: ghcr.io
+            username: ${{ github.actor }}
+            password: GITHUB_TOKEN
+            repository: ${{ github.repository }}
+          # Define more image repositories like this:
+          - registry: quay.io
+            username: ${{ vars.QUAY_USERNAME }}
+            password: QUAY_TOKEN
+            repository: skopecky/janus-backstage-test
 
-          if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
-            TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"
-          fi
-          
-          for TAG in $TAGS; do \
-            podman manifest create ${{ needs.setup.outputs.image_repository }}:$TAG
-            for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
-                podman manifest add ${{ needs.setup.outputs.image_repository }}:$TAG docker://${{ needs.setup.outputs.image_repository }}:$TAG-$PLATFORM; \
-            done
-            podman manifest push ${{ needs.setup.outputs.image_repository }}:$TAG docker://${{ needs.setup.outputs.image_repository }}:$TAG
-          done
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # pin@v3
+
+      - name: Do stuff
+        uses: skopecky-test/.github/.github/actions/clone-to-repos
+        with:
+          image_platform_tags: ${{ needs.setup.outputs.image_platform_tags }}
+          image_tag: ${{ needs.setup.outputs.image_tag }}
+          registry: ${{ matrix.registry }}
+          username: ${{ matrix.username }}
+          password: ${{ secrets[matrix.password] }}
+          repository: ${{ matrix.repository }}

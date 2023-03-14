@@ -2,9 +2,10 @@ name: Pull Request
 
 on: pull_request
 
+
 jobs:
   setup:
-    uses: skopecky-test/.github/.github/workflows/setup.yaml
+    uses: skopecky-test/.github/.github/workflows/setup.yaml@main
     with:
       default_tag_version: "latest"
       build_platforms: "linux/amd64,linux/arm64"
@@ -30,7 +31,7 @@ jobs:
           cp ./Dockerfile ./.dockerignore ./backstage/
 
       - name: Do stuff
-        uses: skopecky-test/.github/.github/actions/build-and-push
+        uses: skopecky-test/.github/.github/actions/build-and-push@main
         with:
           platform: ${{ matrix.platform }}
           image_tag: ${{ needs.setup.outputs.image_tag }}

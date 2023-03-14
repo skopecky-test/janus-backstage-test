@@ -2,6 +2,11 @@ name: Pull Request
 
 on: pull_request
 
+env:
+  MAIN_REGISTRY: ghcr.io
+  MAIN_USERNAME: ${{ github.actor }}
+  MAIN_PASSWORD: ${{ github.token }}
+  MAIN_REPOSITORY: ${{ github.repository }}
 
 jobs:
   setup:

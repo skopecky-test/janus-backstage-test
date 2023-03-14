@@ -41,3 +41,4 @@ jobs:
           platform: ${{ matrix.platform }}
           image_tag: ${{ needs.setup.outputs.image_tag }}
           context: backstage
+          push: false

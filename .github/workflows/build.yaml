@@ -21,7 +21,7 @@ jobs:
       default_tag_version: "latest"
       build_platforms: "linux/amd64,linux/arm64"
 
-  build-images:
+  build-and-push-images:
     runs-on: ubuntu-latest
     needs: ["setup"]
     strategy:
@@ -50,7 +50,7 @@ jobs:
 
   push-images-and-manifests:
     runs-on: ubuntu-latest
-    needs: ["setup", "build-images"]
+    needs: ["setup", "build-and-push-images"]
     strategy:
       matrix:
         include:

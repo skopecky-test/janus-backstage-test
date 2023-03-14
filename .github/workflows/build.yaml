@@ -91,7 +91,7 @@ jobs:
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # pin@v3
 
       - name: Do stuff
-        uses: ./.github/clone-to-repos
+        uses: ./.github/actions/clone-to-repos
         with:
           image_platform_tags: ${{ needs.setup.outputs.image_platform_tags }}
           image_tag: ${{ needs.setup.outputs.image_tag }}

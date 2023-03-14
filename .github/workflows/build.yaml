@@ -97,7 +97,7 @@ jobs:
           image_tag: ${{ needs.setup.outputs.image_tag }}
           registry: ${{ matrix.registry }}
           username: ${{ matrix.username }}
-          password_key: ${{ matrix.password }}
+          password_key: ${{ secrets[matrix.password] }}
           repository: ${{ matrix.repository }}
           main_registry: ${{ env.MAIN_REGISTRY }}
           main_username: ${{ env.MAIN_USERNAME }}

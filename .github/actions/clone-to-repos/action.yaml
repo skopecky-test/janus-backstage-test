@@ -14,7 +14,7 @@ inputs:
   username:
     description: TODO
     required: true
-  password_key:
+  password:
     description: TODO
     required: true
   repository:
@@ -60,7 +60,7 @@ runs:
       with:
         registry: ${{ inputs.registry }}
         username: ${{ inputs.username }}
-        password: ${{ secrets[inputs.password_key] }}
+        password: ${{ inputs.password }}
 
     - name: Push images
       shell: bash

@@ -87,59 +87,15 @@ jobs:
             repository: skopecky/janus-backstage-test
 
     steps:
-      - name: Log in to Registry to pull images
-        uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
+      - name: Do stuff
+        uses: ./.github/actions/clone-to-repos
         with:
-          registry: ${{ env.MAIN_REGISTRY }}
-          username: ${{ env.MAIN_USERNAME }}
-          password: ${{ env.MAIN_PASSWORD }}
-
-      - name: Import Docker images
-        run: |
-          for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
-            PLATFORM_SLASH=$(echo $PLATFORM | sed -e 's/-/\//g')
-            for TAG in latest ${{ needs.setup.outputs.image_tag }}; do \
-              docker pull --platform $PLATFORM_SLASH ${{ env.MAIN_REGISTRY }}/${{ env.MAIN_REPOSITORY }}:$TAG-$PLATFORM
-            done
-          done
-
-      - name: Log out of registry
-        shell: bash
-        run: |
-          podman logout ${{ env.MAIN_REGISTRY }}
-
-      - name: Log in to Registry to push images
-        uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
-        with:
+          image_platform_tags: ${{ needs.setup.outputs.image_platform_tags }}
+          image_tag: ${{ needs.setup.outputs.image_tag }}
           registry: ${{ matrix.registry }}
           username: ${{ matrix.username }}
-          password: ${{ secrets[matrix.password] }}
-
-      - name: Push images
-        shell: bash
-        run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repository }}"
-
-          for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
-            for TAG in latest ${{ needs.setup.outputs.image_tag }}; do \
-              docker tag ${{ env.MAIN_REGISTRY }}/${{ env.MAIN_REPOSITORY }}:$TAG-$PLATFORM $IMAGE_REPOSITORY:$TAG-$PLATFORM
-              docker push $IMAGE_REPOSITORY:$TAG-$PLATFORM
-            done
-          done
-
-      - name: Create and push manifests
-        shell: bash
-        run: |
-          IMAGE_REPOSITORY="${{ matrix.registry }}/${{ matrix.repository }}"
-          TAGS="latest"
-          if [[ "${{ needs.setup.outputs.image_tag }}" != "latest" ]]; then
-            TAGS="$TAGS ${{ needs.setup.outputs.image_tag }}"
-          fi
-
-          for TAG in $TAGS; do \
-            podman manifest create $IMAGE_REPOSITORY:$TAG
-            for PLATFORM in ${{ needs.setup.outputs.image_platform_tags }}; do \
-                podman manifest add $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG-$PLATFORM; \
-            done
-            podman manifest push $IMAGE_REPOSITORY:$TAG docker://$IMAGE_REPOSITORY:$TAG
-          done
+          password_key: ${{ matrix.password }}
+          repository: ${{ matrix.repository }}
+          main_registry: ${{ env.MAIN_REGISTRY }}
+          main_username: ${{ env.MAIN_USERNAME }}
+          main_password: ${{ env.MAIN_PASSWORD }}

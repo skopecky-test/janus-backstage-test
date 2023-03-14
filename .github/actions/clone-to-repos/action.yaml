@@ -3,13 +3,13 @@ description: Clone one image with multiple arcs to multiple image repos
 
 inputs:
   image_platform_tags:
-    description: TODO
+    description: Platform tags in a space separated string, e.g. linux-amd64 linux-arm64
     required: true
   image_tag:
-    description: TODO
+    description: Image tag to prefix all image platform tags
     required: true
   registry:
-    description: TODO
+    description: Registry 
     required: true
   username:
     description: TODO

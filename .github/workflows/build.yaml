@@ -45,10 +45,6 @@ jobs:
         with:
           platform: ${{ matrix.platform }}
           image_tag: ${{ needs.setup.outputs.image_tag }}
-          main_registry: ${{ env.MAIN_REGISTRY }}
-          main_username: ${{ env.MAIN_USERNAME }}
-          main_password: ${{ env.MAIN_PASSWORD }}
-          main_repository: ${{ env.MAIN_REPOSITORY }}
 
   push-images-and-manifests:
     runs-on: ubuntu-latest

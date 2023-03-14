@@ -9,7 +9,7 @@ inputs:
     description: Image tag to prefix all image platform tags
     required: true
   registry:
-    description: Registry 
+    description: Registry
     required: true
   username:
     description: TODO
@@ -20,15 +20,6 @@ inputs:
   repository:
     description: TODO
     required: true
-  main_registry:
-    description: TODO
-    required: true
-  main_username:
-    description: TODO
-    required: true
-  main_password:
-    description: TODO
-    required: true
 
 runs:
   using: "composite"
@@ -36,9 +27,9 @@ runs:
     - name: Log in to Registry to pull images
       uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
       with:
-        registry: ${{ inputs.main_registry }}
-        username: ${{ inputs.main_username }}
-        password: ${{ inputs.main_password }}
+        main_registry: ${{ env.MAIN_REGISTRY }}
+        main_username: ${{ env.MAIN_USERNAME }}
+        main_password: ${{ env.MAIN_PASSWORD }}
 
     - name: Import Docker images
       shell: bash

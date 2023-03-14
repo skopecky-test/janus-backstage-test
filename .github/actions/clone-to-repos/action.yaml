@@ -27,9 +27,9 @@ runs:
     - name: Log in to Registry to pull images
       uses: redhat-actions/podman-login@632d91dfe19e1b55833cb708786bfbad2c2a0335 #pin@v3.2.0
       with:
-        main_registry: ${{ env.MAIN_REGISTRY }}
-        main_username: ${{ env.MAIN_USERNAME }}
-        main_password: ${{ env.MAIN_PASSWORD }}
+        registry: ${{ env.MAIN_REGISTRY }}
+        username: ${{ env.MAIN_USERNAME }}
+        password: ${{ env.MAIN_PASSWORD }}
 
     - name: Import Docker images
       shell: bash

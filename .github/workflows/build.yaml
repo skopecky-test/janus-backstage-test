@@ -68,7 +68,7 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # pin@v3
 
-      - name: Do stuff
+      - name: Mirror images and create manifests
         uses: skopecky-test/.github/.github/actions/mirror-images-and-create-manifests@main
         with:
           image_platform_tags: ${{ needs.setup.outputs.image_platform_tags }}

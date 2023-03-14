@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - test
     tags:
       - v*
 
@@ -15,7 +14,7 @@ env:
 
 jobs:
   setup:
-    uses: ./.github/workflows/setup.yaml
+    uses: skopecky-test/.github/.github/workflows/setup.yaml
     with:
       default_tag_version: "latest"
       build_platforms: "linux/amd64,linux/arm64"
@@ -41,7 +40,7 @@ jobs:
           cp ./Dockerfile ./.dockerignore ./backstage/
 
       - name: Do stuff
-        uses: ./.github/actions/build-and-push
+        uses: skopecky-test/.github/.github/actions/build-and-push
         with:
           platform: ${{ matrix.platform }}
           image_tag: ${{ needs.setup.outputs.image_tag }}
@@ -68,7 +67,7 @@ jobs:
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # pin@v3
 
       - name: Do stuff
-        uses: ./.github/actions/clone-to-repos
+        uses: skopecky-test/.github/.github/actions/clone-to-repos
         with:
           image_platform_tags: ${{ needs.setup.outputs.image_platform_tags }}
           image_tag: ${{ needs.setup.outputs.image_tag }}

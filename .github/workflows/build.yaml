@@ -45,6 +45,7 @@ jobs:
         with:
           platform: ${{ matrix.platform }}
           image_tag: ${{ needs.setup.outputs.image_tag }}
+          context: backstage
 
   push-images-and-manifests:
     runs-on: ubuntu-latest

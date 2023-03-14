@@ -88,7 +88,7 @@ jobs:
 
     steps:
       - name: Do stuff
-        uses: ./.github/actions/clone-to-repos
+        uses: ./.github/clone-to-repos
         with:
           image_platform_tags: ${{ needs.setup.outputs.image_platform_tags }}
           image_tag: ${{ needs.setup.outputs.image_tag }}

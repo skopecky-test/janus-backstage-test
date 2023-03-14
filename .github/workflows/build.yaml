@@ -75,6 +75,3 @@ jobs:
           username: ${{ matrix.username }}
           password: ${{ secrets[matrix.password] }}
           repository: ${{ matrix.repository }}
-          main_registry: ${{ env.MAIN_REGISTRY }}
-          main_username: ${{ env.MAIN_USERNAME }}
-          main_password: ${{ env.MAIN_PASSWORD }}

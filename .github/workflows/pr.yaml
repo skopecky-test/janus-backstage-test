@@ -30,7 +30,7 @@ jobs:
           mkdir backstage
           cp ./Dockerfile ./.dockerignore ./backstage/
 
-      - name: Do stuff
+      - name: Build images
         uses: skopecky-test/.github/.github/actions/build-and-push@main
         with:
           platform: ${{ matrix.platform }}
